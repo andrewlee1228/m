@@ -15,15 +15,13 @@ export function middleware(request: NextRequest) {
 
   // Prevent middleware from running on Genkit's dev server path
   if (pathname.startsWith('/__genkit')) {
-    return NextResponse.next(); 
+    return NextResponse.next();
   }
 
-  // Explicitly redirect the root path to the default locale's root
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL(`/${defaultLocale}${pathname}`, request.url));
-  }
-
-  return i18nMiddlewareHandler(request); // Apply i18n middleware for other paths
+  // Let next-international handle all locale-based routing, including the root path.
+  // With 'rewrite' strategy, it will redirect '/' to '/{defaultLocale}/'
+  // and then rewrite locale-prefixed paths to the corresponding app router pages.
+  return i18nMiddlewareHandler(request);
 }
 
 export const config = {
