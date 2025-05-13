@@ -1,14 +1,16 @@
+
 "use client";
 
 import { useAppContext } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wrench, PlusCircle, ListFilter, AlertTriangle, Home, Building, Loader2 } from 'lucide-react';
+import { Wrench, PlusCircle, ListFilter, AlertTriangle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { MaintenanceRequest } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
+import AdvertisementBanner, { type AdItem } from '@/components/AdvertisementBanner';
 
 const mockMaintenanceRequests: MaintenanceRequest[] = [
   { id: 'req1', category: 'Plumbing', description: 'Leaky faucet in kitchen sink', status: 'In Progress', submittedAt: '2024-07-03T10:00:00Z', unit: 'Apt 101', branchName: 'Downtown Central' },
@@ -17,14 +19,22 @@ const mockMaintenanceRequests: MaintenanceRequest[] = [
   { id: 'req4', category: 'Electrical', description: 'Outlet in bedroom not working', status: 'Cancelled', submittedAt: '2024-06-15T11:00:00Z', unit: 'Apt 101', branchName: 'Downtown Central' },
 ];
 
+const mockAds: AdItem[] = [
+  { id: 'ad1', imageUrl: 'https://picsum.photos/seed/ad_restaurant/1200/400', altText: 'Delicious food at a local restaurant', linkUrl: '#', imageHint: 'restaurant food' },
+  { id: 'ad2', imageUrl: 'https://picsum.photos/seed/ad_shopping/1200/400', altText: 'Latest fashion trends', linkUrl: '#', imageHint: 'shopping fashion' },
+  { id: 'ad3', imageUrl: 'https://picsum.photos/seed/ad_travel/1200/400', altText: 'Explore new destinations', linkUrl: '#', imageHint: 'travel vacation' },
+  { id: 'ad4', imageUrl: 'https://picsum.photos/seed/ad_tech/1200/400', altText: 'Get the newest gadgets', linkUrl: '#', imageHint: 'tech gadget' },
+  { id: 'ad5', imageUrl: 'https://picsum.photos/seed/ad_service/1200/400', altText: 'Professional home services', linkUrl: '#', imageHint: 'home service' },
+];
+
 export default function MaintenanceListPage() {
   const { appContext } = useAppContext();
-  const t = useScopedI18n('maintenanceListPage'); // Assuming a scope for this page
+  const t = useScopedI18n('maintenanceListPage'); 
   const commonT = useScopedI18n('common');
   const currentLocale = useCurrentLocale();
 
 
-  if (appContext.status === 'loading') { // Handle loading explicitly
+  if (appContext.status === 'loading') { 
     return (
       <div className="flex items-center justify-center h-full">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -33,8 +43,6 @@ export default function MaintenanceListPage() {
   }
   
   if (appContext.status === 'unauthenticated') {
-    // This should ideally be handled by the layout, but as a fallback
-    // router.replace(`/${currentLocale}/login`); // useRouter cannot be called at top level here
     if (typeof window !== 'undefined') window.location.href = `/${currentLocale}/login`;
     return null;
   }
@@ -69,7 +77,6 @@ export default function MaintenanceListPage() {
   const getStatusBadgeClass = (status: MaintenanceRequest['status']) => {
     switch (status) {
       case 'Completed': return 'bg-green-500 text-white hover:bg-green-600';
-      // Add other custom classes if needed
       default: return '';
     }
   };
@@ -78,17 +85,15 @@ export default function MaintenanceListPage() {
     try {
       return t(`status.${status.toLowerCase().replace(/\s+/g, '')}` as any);
     } catch {
-      return status; // Fallback
+      return status; 
     }
   };
   
   const translateCategory = (category: string) => {
      try {
-      // Assuming categories are like "Plumbing", "HVAC" in mock data
-      // and translation keys are "plumbing", "hvac"
       return t(`categories.${category.toLowerCase().replace(/\s+/g, '-')}` as any);
     } catch {
-      return category; // Fallback
+      return category; 
     }
   };
 
@@ -146,7 +151,6 @@ export default function MaintenanceListPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="sm" asChild>
-                        {/* Ensure this link is also locale-aware if it leads to a dynamic page */}
                         <Link href={`/${currentLocale}/dashboard/maintenance/${request.id}`}>{t('viewAction')}</Link>
                     </Button>
                   </TableCell>
@@ -157,6 +161,10 @@ export default function MaintenanceListPage() {
           {mockMaintenanceRequests.length === 0 && <p className="text-center text-muted-foreground py-6">{t('noRequestsMessage')}</p>}
         </CardContent>
       </Card>
+      
+      <AdvertisementBanner ads={mockAds} className="my-8" />
+
     </div>
   );
 }
+
