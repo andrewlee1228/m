@@ -17,7 +17,7 @@ export default {
     allRequests: 'All Requests',
     viewEvents: 'View Events',
     viewPayments: 'View Payments',
-    appLogoAriaLabel: 'Axxel Logo',
+    appLogoAriaLabel: 'Mangrove Logo',
     serviceType: 'Service Type:',
     userTypeLive: 'Live Resident',
     userTypeStay: 'Stay Guest',

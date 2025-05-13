@@ -17,7 +17,7 @@ export default {
     allRequests: '모든 요청',
     viewEvents: '이벤트 보기',
     viewPayments: '결제 내역 보기',
-    appLogoAriaLabel: 'Axxel 로고',
+    appLogoAriaLabel: 'Mangrove 로고',
     serviceType: '서비스 유형:',
     userTypeLive: '거주자',
     userTypeStay: '숙박 게스트',

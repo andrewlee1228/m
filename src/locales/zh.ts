@@ -17,7 +17,7 @@ export default {
     allRequests: '所有请求',
     viewEvents: '查看活动',
     viewPayments: '查看付款',
-    appLogoAriaLabel: 'Axxel 标志',
+    appLogoAriaLabel: 'Mangrove 标志',
     serviceType: '服务类型：',
     userTypeLive: '住户',
     userTypeStay: '住宿客人',

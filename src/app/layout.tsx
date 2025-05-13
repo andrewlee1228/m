@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Axxel Living',
+  title: 'Mangrove Living',
   description: 'Your integrated living and stay management app.',
 };
 
@@ -33,4 +33,3 @@ export default async function RootLayout({ // Make it async
     </html>
   );
 }
-
