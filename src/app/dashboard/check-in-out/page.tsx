@@ -3,12 +3,13 @@
 import { useAppContext } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LogIn, LogOut, QrCode, Link2, Smile, Meh, Frown, AlertTriangle } from 'lucide-react';
+import { LogIn, LogOut, QrCode, Link2, Smile, Meh, Frown, AlertTriangle, Loader2 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import Link from 'next/link'; // Import Link component
 
 export default function CheckInOutPage() {
   const { appContext } = useAppContext();
@@ -34,8 +35,17 @@ export default function CheckInOutPage() {
   const checkinDate = new Date(activeReservation.startDate);
   const checkoutDate = new Date(activeReservation.endDate);
 
-  const canCheckIn = now >= checkinDate && now < checkoutDate; // Simplified logic
-  const canCheckOut = now >= checkinDate; // Can checkout anytime after checkin, ideally close to endDate
+  // Add buffer for check-in (e.g., allow check-in starting from the beginning of the check-in day)
+  const checkinStartOfDay = new Date(checkinDate);
+  checkinStartOfDay.setHours(0, 0, 0, 0);
+
+  // Add buffer for check-out (e.g., allow check-out until the end of the check-out day)
+  const checkoutEndOfDay = new Date(checkoutDate);
+  checkoutEndOfDay.setHours(23, 59, 59, 999);
+
+  const canCheckIn = now >= checkinStartOfDay && now < checkoutEndOfDay; // More flexible check-in window
+  const canCheckOut = now >= checkinStartOfDay; // Can start checkout process after check-in day starts
+
 
   const handleCheckIn = () => {
     toast({ title: "Check-In Initiated", description: "Follow QR code or link instructions." });
@@ -49,13 +59,22 @@ export default function CheckInOutPage() {
     setIsCheckingOut(false);
     toast({ title: "Check-Out Successful", description: "Thank you for staying with us! Your feedback is appreciated." });
     // Potentially redirect or update UI state
+    // Ideally, update appContext status or activeReservation to reflect checkout
   };
-  
+
   const SmileyButton = ({ Icon, value, currentRating, onClick }: {Icon: React.ElementType, value: number, currentRating: number | null, onClick: (value: number) => void}) => (
-    <Button 
-        variant={currentRating === value ? "default" : "outline"} 
-        size="icon" 
-        className={`rounded-full h-12 w-12 ${currentRating === value ? (value <=2 ? 'bg-destructive' : value === 3 ? 'bg-yellow-500' : 'bg-green-500') : ''}`}
+    <Button
+        variant={currentRating === value ? "default" : "outline"}
+        size="icon"
+        className={`rounded-full h-12 w-12 transition-all ${
+          currentRating === value
+            ? value <= 2
+              ? 'bg-destructive text-destructive-foreground scale-110'
+              : value === 3
+              ? 'bg-yellow-500 text-white scale-110'
+              : 'bg-green-500 text-white scale-110'
+            : 'hover:bg-muted'
+        }`}
         onClick={() => onClick(value)}
     >
         <Icon className="h-6 w-6" />
@@ -67,10 +86,10 @@ export default function CheckInOutPage() {
     <div className="max-w-lg mx-auto space-y-8">
       <Card className="shadow-lg">
          <div className="relative h-40 w-full">
-             <Image 
-                src={`https://picsum.photos/seed/checkin_${activeReservation.branchName.replace(/\s+/g, '')}/600/200`} 
-                alt="Hotel lobby or welcome area" 
-                layout="fill" 
+             <Image
+                src={`https://picsum.photos/seed/checkin_${activeReservation.branchName.replace(/\s+/g, '')}/600/200`}
+                alt="Hotel lobby or welcome area"
+                layout="fill"
                 objectFit="cover"
                 data-ai-hint="hotel lobby"
             />
@@ -82,7 +101,7 @@ export default function CheckInOutPage() {
       </Card>
 
       {/* Check-In Section */}
-      {canCheckIn && !canCheckOut /* Crude logic to hide check-in if checkout is possible or past */ && (
+      {canCheckIn && !canCheckOut && now < checkoutDate /* Simplified logic: Show check-in before checkout day starts */ && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center"><LogIn className="mr-2 h-5 w-5 text-primary" /> Check-In</CardTitle>
@@ -99,7 +118,7 @@ export default function CheckInOutPage() {
       )}
 
       {/* Check-Out Section */}
-      {canCheckOut && (
+      {canCheckOut && now < checkoutEndOfDay /* Show checkout until end of checkout day */ && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center"><LogOut className="mr-2 h-5 w-5 text-destructive" /> Check-Out</CardTitle>
@@ -110,11 +129,12 @@ export default function CheckInOutPage() {
               <Label htmlFor="feedback" className="font-medium">Share Your Feedback (Optional)</Label>
               <p className="text-xs text-muted-foreground mb-2">How was your stay?</p>
               <div className="flex justify-around mb-3">
+                 {/* Using values 1-5 for rating */}
                 <SmileyButton Icon={Frown} value={1} currentRating={rating} onClick={setRating} />
-                <SmileyButton Icon={Frown} value={2} currentRating={rating} onClick={setRating} /> {/* Using Frown for 2 for simplicity */}
+                <SmileyButton Icon={Meh} value={2} currentRating={rating} onClick={setRating} /> {/* Meh for 2 */}
                 <SmileyButton Icon={Meh} value={3} currentRating={rating} onClick={setRating} />
                 <SmileyButton Icon={Smile} value={4} currentRating={rating} onClick={setRating} />
-                <SmileyButton Icon={Smile} value={5} currentRating={rating} onClick={setRating} /> {/* Using Smile for 5 for simplicity */}
+                <SmileyButton Icon={Smile} value={5} currentRating={rating} onClick={setRating} /> {/* Smile for 5 */}
               </div>
               <Textarea
                 id="feedback"
@@ -133,7 +153,7 @@ export default function CheckInOutPage() {
           </CardFooter>
         </Card>
       )}
-       {!canCheckIn && !canCheckOut && now < checkinDate && (
+       {!canCheckIn && now < checkinStartOfDay && ( // Before the check-in day
          <Card>
             <CardHeader>
                 <CardTitle>Your Stay is Upcoming</CardTitle>
@@ -144,7 +164,7 @@ export default function CheckInOutPage() {
             </CardContent>
          </Card>
        )}
-       {now > checkoutDate && (
+       {now > checkoutEndOfDay && ( // After the end of the check-out day
          <Card>
             <CardHeader>
                 <CardTitle>Your Stay Has Ended</CardTitle>
