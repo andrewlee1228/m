@@ -1,7 +1,7 @@
 // src/middleware.ts
 import { createI18nMiddleware } from 'next-international/middleware';
 import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server'; // Import NextResponse
+import { NextResponse } from 'next/server';
 import { locales, defaultLocale } from './lib/i18n/config';
 
 const i18nMiddlewareHandler = createI18nMiddleware({
@@ -11,10 +11,18 @@ const i18nMiddlewareHandler = createI18nMiddleware({
 });
 
 export function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
   // Prevent middleware from running on Genkit's dev server path
-  if (request.nextUrl.pathname.startsWith('/__genkit')) {
-    return NextResponse.next(); // Explicitly continue for genkit paths
+  if (pathname.startsWith('/__genkit')) {
+    return NextResponse.next(); 
   }
+
+  // Explicitly redirect the root path to the default locale's root
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL(`/${defaultLocale}${pathname}`, request.url));
+  }
+
   return i18nMiddlewareHandler(request); // Apply i18n middleware for other paths
 }
 
