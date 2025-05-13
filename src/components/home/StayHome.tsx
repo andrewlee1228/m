@@ -3,7 +3,7 @@
 import type { Reservation } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MapPin, Info, LogOut, CalendarClock, ConciergeBell, Utensils, ShoppingBag } from 'lucide-react'; // Removed Bell
+import { MapPin, Info, LogOut, CalendarClock, ConciergeBell, Utensils, ShoppingBag } from 'lucide-react'; 
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -18,11 +18,11 @@ interface StayHomeProps {
 
 export default function StayHome({ user, reservation }: StayHomeProps) {
   const t = useScopedI18n('stayHomePage');
-  const currentLocale = useCurrentLocale();
+  const currentLocale = useCurrentLocale(); // Get current locale
 
   const guestName = user.name || `Guest in ${reservation.unit || 'Room'}`;
   const [countdown, setCountdown] = useState('');
-  const [progressValue, setProgressValue] = useState(0); // Renamed to avoid conflict with Progress component
+  const [progressValue, setProgressValue] = useState(0);
 
   useEffect(() => {
     const calculateCountdown = () => {
@@ -53,11 +53,11 @@ export default function StayHome({ user, reservation }: StayHomeProps) {
 
       let countdownValue = "";
       if (days > 0) {
-        countdownValue = `${days}d ${hours}h`;
+        countdownValue = t('countdownDaysHours', {days, hours});
       } else if (hours > 0) {
-        countdownValue = `${hours}h ${minutes}m`;
+        countdownValue = t('countdownHoursMinutes', {hours, minutes});
       } else {
-        countdownValue = `${minutes}m`;
+        countdownValue = t('countdownMinutes', {minutes});
       }
       setCountdown(t('countdownLeft', { value: countdownValue }));
     };
@@ -78,13 +78,13 @@ export default function StayHome({ user, reservation }: StayHomeProps) {
             <Image 
                 src={`https://picsum.photos/seed/${reservation.branchName.replace(/\s+/g, '')}/1200/400`}
                 alt={`${reservation.branchName} hotel view`}
-                layout="fill"
-                objectFit="cover"
+                fill // Use fill instead of layout="fill"
+                className="object-cover" // Use objectFit directly as a class
                 data-ai-hint="hotel city"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end">
                 <h1 className="text-3xl sm:text-4xl font-bold text-white">{t('enjoyYourStay', { name: guestName.split(' ')[0] })}</h1>
-                <p className="text-lg text-primary-foreground/90">{t('yourLocation', { branchName: reservation.branchName, unit: reservation.unit || 'your room' })}</p>
+                <p className="text-lg text-primary-foreground/90">{t('yourLocation', { branchName: reservation.branchName, unit: reservation.unit || t('defaultRoomName') })}</p>
             </div>
         </div>
       </Card>
@@ -106,7 +106,7 @@ export default function StayHome({ user, reservation }: StayHomeProps) {
         </CardContent>
         <CardFooter>
           <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-            <Link href="/dashboard/check-in-out"><LogOut className="mr-2 h-4 w-4" /> {t('proceedToCheckout')}</Link>
+            <Link href={`/${currentLocale}/dashboard/check-in-out`}><LogOut className="mr-2 h-4 w-4" /> {t('proceedToCheckout')}</Link>
           </Button>
         </CardFooter>
       </Card>
@@ -121,25 +121,25 @@ export default function StayHome({ user, reservation }: StayHomeProps) {
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-4">
           <Button variant="outline" className="h-auto py-3 flex-col space-y-1" asChild>
-            <Link href="/dashboard/stay/concierge">
+            <Link href={`/${currentLocale}/dashboard/stay/concierge`}>
               <ConciergeBell className="h-7 w-7 mb-1 text-primary" />
               <span>{t('aiConcierge')}</span>
             </Link>
           </Button>
           <Button variant="outline" className="h-auto py-3 flex-col space-y-1" asChild>
-            <Link href="/dashboard/stay/services?type=food">
+            <Link href={`/${currentLocale}/dashboard/stay/services?type=food`}>
               <Utensils className="h-7 w-7 mb-1 text-primary" />
               <span>{t('orderFood')}</span>
             </Link>
           </Button>
           <Button variant="outline" className="h-auto py-3 flex-col space-y-1" asChild>
-            <Link href="/dashboard/stay/services?type=towels">
+            <Link href={`/${currentLocale}/dashboard/stay/services?type=towels`}>
               <ShoppingBag className="h-7 w-7 mb-1 text-primary" />
               <span>{t('requestAmenities')}</span>
             </Link>
           </Button>
           <Button variant="outline" className="h-auto py-3 flex-col space-y-1" asChild>
-            <Link href="/dashboard/stay/local-guide">
+            <Link href={`/${currentLocale}/dashboard/stay/local-guide`}>
               <Info className="h-7 w-7 mb-1 text-primary" />
               <span>{t('areaInfo')}</span>
             </Link>

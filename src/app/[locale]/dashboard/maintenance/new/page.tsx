@@ -9,26 +9,47 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Wrench, Send, Paperclip, AlertTriangle, Home, Building, Loader2 } from 'lucide-react'; // Added Loader2
+import { Wrench, Send, Paperclip, AlertTriangle, Home, Building, Loader2 } from 'lucide-react'; 
 import { useToast } from '@/hooks/use-toast';
+import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
 
+// These should ideally be translation keys
 const maintenanceCategories = [
-  "Plumbing", "Electrical", "Appliance", "HVAC (Heating/Cooling)", 
-  "Pest Control", "General Repair", "Cleaning (for LongStay/Stay services)", "Other"
+  { value: "plumbing", labelKey: "plumbing" },
+  { value: "electrical", labelKey: "electrical" },
+  { value: "appliance", labelKey: "appliance" },
+  { value: "hvac", labelKey: "hvac" },
+  { value: "pest-control", labelKey: "pestControl" },
+  { value: "general-repair", labelKey: "generalRepair" },
+  { value: "cleaning", labelKey: "cleaning" },
+  { value: "other", labelKey: "other" },
 ];
 
 export default function NewMaintenanceRequestPage() {
   const router = useRouter();
   const { appContext } = useAppContext();
   const { toast } = useToast();
+  const t = useScopedI18n('maintenanceRequestPage'); // Assuming a scope for this page
+  const commonT = useScopedI18n('common');
+  const currentLocale = useCurrentLocale();
+  
   const [isLoading, setIsLoading] = useState(false);
-
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
-  const [photos, setPhotos] = useState<File[]>([]); // For file uploads
+  const [photos, setPhotos] = useState<File[]>([]); 
 
-  if (appContext.status === 'loading' || appContext.status === 'unauthenticated') {
-    return <p className="text-center py-10">Loading...</p>;
+  if (appContext.status === 'loading') { // Handle loading explicitly
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
+  if (appContext.status === 'unauthenticated') {
+    // This should ideally be handled by the layout, but as a fallback
+    router.replace(`/${currentLocale}/login`);
+    return null;
   }
   
   const { activeReservation } = appContext;
@@ -37,35 +58,34 @@ export default function NewMaintenanceRequestPage() {
       <div className="flex items-center justify-center h-full">
         <Card className="max-w-md text-center p-8">
            <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <CardTitle>Access Denied</CardTitle>
-          <CardDescription className="mt-2">This feature is not available for your current service type.</CardDescription>
+          <CardTitle>{t('accessDenied.title')}</CardTitle>
+          <CardDescription className="mt-2">{t('accessDenied.descriptionNotAvailable')}</CardDescription>
         </Card>
       </div>
     );
   }
 
   const userType = activeReservation.type;
-  const pageTitle = userType === 'Stay' ? 'Submit a New Service Request' : 'Submit a New Maintenance Request';
+  const pageTitle = userType === 'Stay' ? t('pageTitleService') : t('pageTitleMaintenance');
   const descriptionPlaceholder = userType === 'Stay' 
-    ? "e.g., Need extra towels, room cleaning, or help with TV remote."
-    : "e.g., Kitchen sink is clogged, AC is not cooling, light bulb in hallway needs replacement.";
+    ? t('descriptionPlaceholderService')
+    : t('descriptionPlaceholderMaintenance');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!category || !description) {
-      toast({ title: "Missing Information", description: "Please select a category and provide a description.", variant: "destructive" });
+      toast({ title: t('submitError.missingInfoTitle'), description: t('submitError.missingInfoDescription'), variant: "destructive" });
       return;
     }
     setIsLoading(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     setIsLoading(false);
 
     toast({
-      title: "Request Submitted",
-      description: "Your request has been received. We'll process it shortly.",
+      title: t('submitSuccess.title'),
+      description: t('submitSuccess.description'),
     });
-    router.push('/dashboard/maintenance'); // Or a page showing the specific request
+    router.push(`/${currentLocale}/dashboard/maintenance`); 
   };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,29 +103,27 @@ export default function NewMaintenanceRequestPage() {
             {pageTitle}
           </CardTitle>
           <CardDescription>
-            Let us know what needs attention in your {' '}
-            {activeReservation.unit ? <><Home className="inline h-4 w-4 mr-1"/> {activeReservation.unit}</> 
-                                    : <><Building className="inline h-4 w-4 mr-1"/> {activeReservation.branchName}</>}.
+            {t('pageSubtitle', { location: activeReservation.unit ? `${t('unit')} ${activeReservation.unit}` : activeReservation.branchName })}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="category" className="font-medium">Category</Label>
+              <Label htmlFor="category" className="font-medium">{t('categoryLabel')}</Label>
               <Select value={category} onValueChange={setCategory} required>
                 <SelectTrigger id="category" className="mt-1">
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue placeholder={t('categoryPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {maintenanceCategories.map((cat) => (
-                    <SelectItem key={cat} value={cat.toLowerCase().replace(/\s+/g, '-')}>{cat}</SelectItem>
+                    <SelectItem key={cat.value} value={cat.value}>{t(`categories.${cat.labelKey}` as any)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="description" className="font-medium">Description</Label>
+              <Label htmlFor="description" className="font-medium">{t('descriptionLabel')}</Label>
               <Textarea
                 id="description"
                 placeholder={descriptionPlaceholder}
@@ -119,7 +137,7 @@ export default function NewMaintenanceRequestPage() {
             </div>
 
             <div>
-              <Label htmlFor="photos" className="font-medium">Upload Photos (Optional)</Label>
+              <Label htmlFor="photos" className="font-medium">{t('photosLabel')}</Label>
               <Input
                 id="photos"
                 type="file"
@@ -131,20 +149,20 @@ export default function NewMaintenanceRequestPage() {
               />
               {photos.length > 0 && (
                 <div className="mt-2 text-xs text-muted-foreground">
-                  {photos.length} file(s) selected: {photos.map(f => f.name).join(', ')}
+                  {t('filesSelected', { count: photos.length, names: photos.map(f => f.name).join(', ') })}
                 </div>
               )}
             </div>
             
             <p className="text-xs text-muted-foreground">
-              For urgent issues, please contact the front desk or management directly.
+              {t('urgentIssueNote')}
             </p>
 
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('submittingButton')}</>
               ) : (
-                <><Send className="mr-2 h-4 w-4" /> Submit Request</>
+                <><Send className="mr-2 h-4 w-4" /> {t('submitButton')}</>
               )}
             </Button>
           </form>

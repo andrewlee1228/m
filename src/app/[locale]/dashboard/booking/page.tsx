@@ -28,7 +28,25 @@ export default function BookingManagementPage() {
   
   const { activeReservation } = appContext;
   const userType = activeReservation.type;
-  const userTypeDisplay = userType.toLowerCase(); // This might need translation if "longstay", "stay" are keys
+  // Ensure userTypeDisplay can be translated if it's a key like 'longstay' or 'stay'
+  const userTypeDisplayKey = userType.toLowerCase() as 'longstay' | 'stay'; // Assuming these keys exist in i18n files
+
+  // Attempt to translate userTypeDisplay, fallback to userType if translation not found
+  let userTypeDisplay;
+  try {
+      // This is a conceptual example, you'd need a way to translate dynamic keys or have predefined ones
+      // For simplicity, we'll assume common.userTypeLongStay, common.userTypeStay exist
+      if (userTypeDisplayKey === 'longstay') {
+          userTypeDisplay = commonT('userTypeLongStay' as any); // Cast as any if not strictly typed
+      } else if (userTypeDisplayKey === 'stay') {
+          userTypeDisplay = commonT('userTypeStay' as any);
+      } else {
+          userTypeDisplay = userType; // Fallback
+      }
+  } catch (e) {
+    userTypeDisplay = userType; // Fallback
+  }
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(currentLocale, { year: 'numeric', month: 'long', day: 'numeric' });
@@ -63,20 +81,20 @@ export default function BookingManagementPage() {
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-3">
             <Button variant="outline" asChild>
-                <Link href={`/dashboard/booking/details/${activeReservation.id}`}>
+                <Link href={`/${currentLocale}/dashboard/booking/details/${activeReservation.id}`}>
                     <FileText className="mr-2 h-4 w-4" /> {commonT('viewDetails')}
                 </Link>
             </Button>
             {userType === 'LongStay' && (
                 <Button asChild>
-                    <Link href={`/dashboard/booking/extend/${activeReservation.id}`}>
+                    <Link href={`/${currentLocale}/dashboard/booking/extend/${activeReservation.id}`}>
                         <CalendarPlus className="mr-2 h-4 w-4" /> {commonT('extendStay')}
                     </Link>
                 </Button>
             )}
              {userType === 'Stay' && (
                 <Button asChild>
-                    <Link href={`/dashboard/booking/modify/${activeReservation.id}`}>
+                    <Link href={`/${currentLocale}/dashboard/booking/modify/${activeReservation.id}`}>
                         <CalendarPlus className="mr-2 h-4 w-4" /> {commonT('modifyBooking')}
                     </Link>
                 </Button>

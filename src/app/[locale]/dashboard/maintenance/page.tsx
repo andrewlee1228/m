@@ -3,11 +3,12 @@
 import { useAppContext } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wrench, PlusCircle, ListFilter, AlertTriangle, Home, Building } from 'lucide-react';
+import { Wrench, PlusCircle, ListFilter, AlertTriangle, Home, Building, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { MaintenanceRequest } from '@/types';
 import { Badge } from '@/components/ui/badge';
+import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
 
 const mockMaintenanceRequests: MaintenanceRequest[] = [
   { id: 'req1', category: 'Plumbing', description: 'Leaky faucet in kitchen sink', status: 'In Progress', submittedAt: '2024-07-03T10:00:00Z', unit: 'Apt 101', branchName: 'Downtown Central' },
@@ -18,29 +19,42 @@ const mockMaintenanceRequests: MaintenanceRequest[] = [
 
 export default function MaintenanceListPage() {
   const { appContext } = useAppContext();
+  const t = useScopedI18n('maintenanceListPage'); // Assuming a scope for this page
+  const commonT = useScopedI18n('common');
+  const currentLocale = useCurrentLocale();
 
-  if (appContext.status === 'loading' || appContext.status === 'unauthenticated') {
-    return <p className="text-center py-10">Loading...</p>;
+
+  if (appContext.status === 'loading') { // Handle loading explicitly
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
+  if (appContext.status === 'unauthenticated') {
+    // This should ideally be handled by the layout, but as a fallback
+    // router.replace(`/${currentLocale}/login`); // useRouter cannot be called at top level here
+    if (typeof window !== 'undefined') window.location.href = `/${currentLocale}/login`;
+    return null;
   }
   
   const { activeReservation } = appContext;
   if (!activeReservation || (activeReservation.type !== 'Live' && activeReservation.type !== 'LongStay' && activeReservation.type !== 'Stay') ) {
-     // Stay users may have limited maintenance view, PRD more focused on Live/LongStay
-     // Adjust this condition based on specific rules for Stay users' maintenance requests
     return (
       <div className="flex items-center justify-center h-full">
         <Card className="max-w-md text-center p-8">
            <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <CardTitle>Access Denied</CardTitle>
-          <CardDescription className="mt-2">Maintenance requests are typically for residents. Stay guests may use service requests.</CardDescription>
+          <CardTitle>{t('accessDenied.title')}</CardTitle>
+          <CardDescription className="mt-2">{t('accessDenied.descriptionForResidents')}</CardDescription>
         </Card>
       </div>
     );
   }
 
   const userType = activeReservation.type;
-  const pageTitle = userType === 'Stay' ? 'Service Requests' : 'Maintenance Requests';
-  const newRequestButtonText = userType === 'Stay' ? 'New Service Request' : 'New Maintenance Request';
+  const pageTitle = userType === 'Stay' ? t('pageTitleService') : t('pageTitleMaintenance');
+  const newRequestButtonText = userType === 'Stay' ? t('newRequestButtonService') : t('newRequestButtonMaintenance');
 
   const getStatusBadgeVariant = (status: MaintenanceRequest['status']) => {
     switch (status) {
@@ -55,9 +69,29 @@ export default function MaintenanceListPage() {
   const getStatusBadgeClass = (status: MaintenanceRequest['status']) => {
     switch (status) {
       case 'Completed': return 'bg-green-500 text-white hover:bg-green-600';
+      // Add other custom classes if needed
       default: return '';
     }
   };
+  
+  const translateStatus = (status: MaintenanceRequest['status']) => {
+    try {
+      return t(`status.${status.toLowerCase().replace(/\s+/g, '')}` as any);
+    } catch {
+      return status; // Fallback
+    }
+  };
+  
+  const translateCategory = (category: string) => {
+     try {
+      // Assuming categories are like "Plumbing", "HVAC" in mock data
+      // and translation keys are "plumbing", "hvac"
+      return t(`categories.${category.toLowerCase().replace(/\s+/g, '-')}` as any);
+    } catch {
+      return category; // Fallback
+    }
+  };
+
 
   return (
     <div className="space-y-8">
@@ -68,60 +102,59 @@ export default function MaintenanceListPage() {
                 {pageTitle}
             </CardTitle>
             <Button asChild>
-                <Link href="/dashboard/maintenance/new">
+                <Link href={`/${currentLocale}/dashboard/maintenance/new`}>
                 <PlusCircle className="mr-2 h-4 w-4" /> {newRequestButtonText}
                 </Link>
             </Button>
         </div>
         <CardDescription>
-            View and manage your {pageTitle.toLowerCase()} for{' '}
-            {activeReservation.unit ? <><Home className="inline h-4 w-4 mr-1"/> {activeReservation.unit}</> 
-                                    : <><Building className="inline h-4 w-4 mr-1"/> {activeReservation.branchName}</>}.
+            {t('pageSubtitle', { title: pageTitle.toLowerCase(), location: activeReservation.unit ? `${commonT('unit')} ${activeReservation.unit}` : activeReservation.branchName })}
         </CardDescription>
       </CardHeader>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
-                <CardTitle>Your Requests</CardTitle>
-                <CardDescription>A list of all submitted requests.</CardDescription>
+                <CardTitle>{t('yourRequestsTitle')}</CardTitle>
+                <CardDescription>{t('yourRequestsDescription')}</CardDescription>
             </div>
             <Button variant="outline" size="sm">
-                <ListFilter className="mr-2 h-4 w-4" /> Filter by Status
+                <ListFilter className="mr-2 h-4 w-4" /> {t('filterButton')}
             </Button>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Submitted</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('tableHeaders.submitted')}</TableHead>
+                <TableHead>{t('tableHeaders.category')}</TableHead>
+                <TableHead>{t('tableHeaders.description')}</TableHead>
+                <TableHead className="text-center">{t('tableHeaders.status')}</TableHead>
+                <TableHead className="text-right">{t('tableHeaders.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {mockMaintenanceRequests.map((request) => (
                 <TableRow key={request.id}>
-                  <TableCell>{new Date(request.submittedAt).toLocaleDateString()}</TableCell>
-                  <TableCell>{request.category}</TableCell>
+                  <TableCell>{new Date(request.submittedAt).toLocaleDateString(currentLocale)}</TableCell>
+                  <TableCell>{translateCategory(request.category)}</TableCell>
                   <TableCell className="font-medium max-w-xs truncate">{request.description}</TableCell>
                   <TableCell className="text-center">
                     <Badge variant={getStatusBadgeVariant(request.status)} className={getStatusBadgeClass(request.status)}>
-                      {request.status}
+                      {translateStatus(request.status)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/dashboard/maintenance/${request.id}`}>View</Link>
+                        {/* Ensure this link is also locale-aware if it leads to a dynamic page */}
+                        <Link href={`/${currentLocale}/dashboard/maintenance/${request.id}`}>{t('viewAction')}</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-          {mockMaintenanceRequests.length === 0 && <p className="text-center text-muted-foreground py-6">You haven't submitted any requests yet.</p>}
+          {mockMaintenanceRequests.length === 0 && <p className="text-center text-muted-foreground py-6">{t('noRequestsMessage')}</p>}
         </CardContent>
       </Card>
     </div>

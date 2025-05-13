@@ -4,12 +4,12 @@ import { useAppContext } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-// import { Input } from '@/components/ui/input'; // Not used for display
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Phone, Edit3, Shield } from 'lucide-react';
+import { User, Mail, Phone, Edit3, Shield, Loader2 } from 'lucide-react';
 import UserTypeBadge from '@/components/UserTypeBadge';
 import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
+import Link from 'next/link'; // Import Link for navigation
 
 export default function ProfilePage() {
   const { appContext, logout } = useAppContext();
@@ -21,28 +21,46 @@ export default function ProfilePage() {
     return new Date(dateString).toLocaleDateString(currentLocale);
   };
 
-  if (appContext.status !== 'authenticated') {
-    if (appContext.status === 'guest') {
-         return (
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{t('guestProfile')}</CardTitle>
-                        <CardDescription>{t('yourCurrentStayInfo')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p><strong>{t('reservationNumber')}</strong> {appContext.guestData.reservation.reservationNumber}</p>
-                        <p><strong>{t('branch')}</strong> {appContext.guestData.reservation.branchName}</p>
-                        <p><strong>{t('stayPeriod')}</strong> {formatDate(appContext.guestData.reservation.startDate)} - {formatDate(appContext.guestData.reservation.endDate)}</p>
-                        <UserTypeBadge type={appContext.guestData.reservation.type} className="mt-2" />
-                         <Button onClick={logout} variant="outline" className="w-full mt-6">{t('endGuestSession')}</Button>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-    return <p className="text-center py-10">{t('pleaseLogInToViewProfile')}</p>;
+  if (appContext.status === 'loading') {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
   }
+  
+  if (appContext.status === 'guest') {
+       return (
+          <div className="space-y-6 max-w-3xl mx-auto">
+              <Card>
+                  <CardHeader>
+                      <CardTitle>{t('guestProfile')}</CardTitle>
+                      <CardDescription>{t('yourCurrentStayInfo')}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <p><strong>{t('reservationNumber')}</strong> {appContext.guestData.reservation.reservationNumber}</p>
+                      <p><strong>{t('branch')}</strong> {appContext.guestData.reservation.branchName}</p>
+                      <p><strong>{t('stayPeriod')}</strong> {formatDate(appContext.guestData.reservation.startDate)} - {formatDate(appContext.guestData.reservation.endDate)}</p>
+                      <UserTypeBadge type={appContext.guestData.reservation.type} className="mt-2" />
+                       <Button onClick={logout} variant="outline" className="w-full mt-6">{t('endGuestSession')}</Button>
+                  </CardContent>
+              </Card>
+          </div>
+      );
+  }
+
+  if (appContext.status !== 'authenticated') {
+    // This should be caught by layout, but good to have a fallback.
+    // Redirect or show a message.
+    // For simplicity, showing a message. A redirect might be better.
+    if (typeof window !== 'undefined') window.location.href = `/${currentLocale}/login`;
+    return (
+      <div className="flex items-center justify-center h-full">
+          <p className="text-center py-10">{t('pleaseLogInToViewProfile')}</p>
+      </div>
+    );
+  }
+
 
   const { user } = appContext;
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
@@ -114,8 +132,8 @@ export default function ProfilePage() {
             ) : (
               <p className="text-muted-foreground">{t('noActiveServices')}</p>
             )}
-             <Button variant="outline" className="mt-4 w-full sm:w-auto">
-                {t('addNewServiceReservation')}
+             <Button variant="outline" className="mt-4 w-full sm:w-auto" asChild>
+                 <Link href={`/${currentLocale}/new-booking`}>{t('addNewServiceReservation')}</Link>
             </Button>
           </div>
 

@@ -50,8 +50,8 @@ export default function CommunityEventsPage() {
         <Image 
             src={`https://picsum.photos/seed/${event.id}/400/200`} 
             alt={event.title} 
-            layout="fill" 
-            objectFit="cover"
+            fill // Use fill instead of layout="fill"
+            className="object-cover" // Use objectFit directly as a class
             data-ai-hint="community event"
         />
       </div>

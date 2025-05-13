@@ -11,11 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Eye, EyeOff } from 'lucide-react';
+import { UserPlus, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useCurrentLocale } from '@/lib/i18n/client'; // Import useCurrentLocale
 
 export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const currentLocale = useCurrentLocale(); // Get current locale
   const [isLoading, setIsLoading] = useState(false);
 
   const [name, setName] = useState('');
@@ -49,7 +51,7 @@ export default function RegisterPage() {
       title: "Registration Successful",
       description: "Your account has been created. Please log in.",
     });
-    router.push('/login');
+    router.push(`/${currentLocale}/login`);
   };
 
   // Mock branches data
@@ -91,7 +93,7 @@ export default function RegisterPage() {
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required disabled={isLoading} />
-                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)} disabled={isLoading}>
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
@@ -100,7 +102,7 @@ export default function RegisterPage() {
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                  <div className="relative">
                   <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required disabled={isLoading} />
-                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowConfirmPassword(!showConfirmPassword)} disabled={isLoading}>
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
@@ -139,19 +141,19 @@ export default function RegisterPage() {
               <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(Boolean(checked))} disabled={isLoading} />
               <Label htmlFor="terms" className="text-sm font-normal">
                 I agree to the{' '}
-                <Link href="/terms" legacyBehavior><a className="text-primary hover:underline">Terms and Conditions</a></Link>
+                <Link href={`/${currentLocale}/terms`} legacyBehavior><a className="text-primary hover:underline">Terms and Conditions</a></Link>
               </Label>
             </div>
 
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-6" disabled={isLoading}>
-              {isLoading ? 'Creating Account...' : <><UserPlus className="mr-2 h-4 w-4" /> Create Account</>}
+              {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating Account...</> : <><UserPlus className="mr-2 h-4 w-4" /> Create Account</>}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="text-center">
           <p className="text-sm text-muted-foreground">
             Already have an account?{' '}
-            <Link href="/login" legacyBehavior>
+            <Link href={`/${currentLocale}/login`} legacyBehavior>
               <a className="font-medium text-primary hover:underline">Log in</a>
             </Link>
           </p>

@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import AppLogo from '@/components/AppLogo';
 import UserTypeBadge from '@/components/UserTypeBadge';
-import { CheckCircle, Loader2 } from 'lucide-react'; // Added Loader2
+import { CheckCircle, Loader2 } from 'lucide-react'; 
 import type { Reservation } from '@/types';
 import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
 
@@ -17,51 +17,45 @@ export default function SelectReservationPage() {
   const router = useRouter();
   const { appContext, selectReservation, logout } = useAppContext();
   const [selectedReservationId, setSelectedReservationId] = useState<string | undefined>(undefined);
-  const [isReady, setIsReady] = useState(false); // To prevent flicker before context is fully ready
+  const [isReady, setIsReady] = useState(false); 
   const t = useScopedI18n('selectReservationPage');
   const commonT = useScopedI18n('common');
   const currentLocale = useCurrentLocale();
 
   useEffect(() => {
-    // Wait for context to be fully loaded and authenticated
     if (appContext.status === 'loading') {
       setIsReady(false);
       return;
     }
 
     if (appContext.status === 'unauthenticated' || appContext.status === 'guest') {
-      // Guests shouldn't be here, redirect
-      router.replace('/login');
+      router.replace(`/${currentLocale}/login`);
       return;
     }
 
     if (appContext.status === 'authenticated') {
       const reservations = appContext.user.activeReservations;
       if (reservations.length <= 1) {
-        // If user somehow lands here with 0 or 1 reservation, redirect to dashboard
-        router.replace('/dashboard');
+        router.replace(`/${currentLocale}/dashboard`);
         return;
       }
 
-      // If we are here, user MUST have > 1 reservation
-      // Set initial selection if none is active yet or load from context
-      if (!selectedReservationId) { // Only set initial if not already set by user interaction
+      if (!selectedReservationId) { 
          setSelectedReservationId(appContext.activeReservation?.id || reservations[0]?.id);
       }
-      setIsReady(true); // Context is ready and applicable for this page
+      setIsReady(true); 
     }
 
-  }, [appContext, router, selectedReservationId]); // Add selectedReservationId to prevent loop if needed
+  }, [appContext, router, selectedReservationId, currentLocale]); 
 
   const handleSelectAndContinue = () => {
     if (selectedReservationId) {
-      selectReservation(selectedReservationId); // This function now handles navigation
+      selectReservation(selectedReservationId); 
     }
   };
 
   const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString(currentLocale, { year: 'numeric', month: 'short', day: 'numeric' });
 
-  // Show loading state until context is ready and validated
   if (!isReady || appContext.status !== 'authenticated') {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-secondary p-4">
@@ -79,7 +73,6 @@ export default function SelectReservationPage() {
     );
   }
 
-  // At this point, appContext.status === 'authenticated' and reservations.length > 1
   const reservations = appContext.user.activeReservations;
 
   return (
@@ -111,7 +104,7 @@ export default function SelectReservationPage() {
                     <UserTypeBadge type={res.type} />
                   </div>
                   <div className="pl-8 pt-1 text-sm text-muted-foreground">
-                    <p>{commonT('serviceType')} {res.type}</p> {/* Using common key */}
+                    <p>{commonT('serviceType')} {res.type}</p>
                     <p>{t('period')} {formatDate(res.startDate)} - {formatDate(res.endDate)}</p>
                     {res.reservationNumber && <p>{t('reservationNo')} {res.reservationNumber}</p>}
                   </div>
@@ -119,7 +112,6 @@ export default function SelectReservationPage() {
               ))}
             </RadioGroup>
           ) : (
-             // This case should technically be handled by the useEffect redirect, but good fallback
             <p className="text-center text-muted-foreground">{t('noActiveReservations')}</p>
           )}
         </CardContent>

@@ -18,7 +18,11 @@ export default {
     viewEvents: '查看活动',
     viewPayments: '查看付款',
     appLogoAriaLabel: 'Axxel 标志',
-    serviceType: '服务类型：', // Added for select-reservation
+    serviceType: '服务类型：',
+    userTypeLive: '住户',
+    userTypeStay: '住宿客人',
+    userTypeLongStay: '长期住宿',
+    unit: '单元',
   },
   settingsPage: {
     title: '设置',
@@ -58,28 +62,25 @@ export default {
     switchServiceContext: '切换服务上下文',
     switchServiceDescription: '选择要管理的另一个活动服务。',
     dashboard: '仪表板',
-    guestUser: '访客', // Added for guest display name
+    guestUser: '访客', 
   },
   bottomNav: {
     home: '首页',
     profile: '资料',
     settings: '设置',
     payment: '付款',
-    maintenance: '请求', // Changed
+    maintenance: '请求', 
     community: '社区',
     booking: '预订',
     services: '服务',
     facilities: '设施',
-    checkInOut: '入住/退房', // Added
-    concierge: '礼宾', // Added
+    checkInOut: '入住/退房', 
+    concierge: '礼宾', 
   },
   userTypeBadge: {
     Live: '住户',
     Stay: '住宿客人',
     LongStay: '长期住宿',
-  },
-  appContext: {
-    // Potential translations for AppContext related messages if they were UI facing
   },
   dashboardPage: {
     loadingDashboard: '正在加载仪表板...',
@@ -89,13 +90,13 @@ export default {
     selectActiveServicePrompt: '请从您可用的预订中选择一个活动服务进行管理。',
     selectAService: '选择服务',
     welcomeToAxxel: '欢迎来到 Axxel！',
-    welcomeToAxxelName: '{name}，欢迎来到 Axxel！', // Added personalized welcome
+    welcomeToAxxelName: '{name}，欢迎来到 Axxel！', 
     noActiveReservations: '您目前似乎没有任何有效的预订。',
     exploreProperties: '浏览房产',
     makeAReservation: '进行预订',
     unknownReservationType: '未知的预订类型。请联系支持人员。',
-    unexpectedState: '发生意外错误。', // Added
-    reloadPage: '重新加载页面', // Added
+    unexpectedState: '发生意外错误。', 
+    reloadPage: '重新加载页面', 
   },
   liveHomePage: {
     welcomeHome: "欢迎回家, {name}!",
@@ -150,6 +151,10 @@ export default {
     orderFood: "订餐",
     requestAmenities: "请求便利设施",
     areaInfo: "区域信息",
+    defaultRoomName: "您的房间",
+    countdownDaysHours: "{days}天{hours}小时",
+    countdownHoursMinutes: "{hours}小时{minutes}分钟",
+    countdownMinutes: "{minutes}分钟",
   },
   bookingManagementPage: {
     bookingManagementNotApplicable: "预订管理不适用",
@@ -161,9 +166,6 @@ export default {
     reservationNumber: "预订号：",
     checkInDate: "入住日期：",
     checkOutDate: "退房日期：",
-    viewFullDetails: "查看完整详情",
-    extendStay: "延长住宿",
-    modifyBooking: "修改预订",
     longStayOptions: "长期住宿选项",
     exploreLongStayBenefits: "了解长期住宿的优惠和服务。",
     weeklyHousekeeping: "每周客房清洁服务。",
@@ -225,6 +227,18 @@ export default {
     confirmBookingFor: "确认预订 {facilityName}",
     bookingConfirmationMessage: "已预订 {facilityName}，日期 {date} {timeSlot}。(模拟)",
     bookingSelectionError: "请选择设施、日期和时间段（如果适用）。",
+    facilityNames: {
+        gym: "健身中心",
+        pool: "游泳池",
+        lounge: "住户休息室",
+        meeting: "会议室",
+    },
+    facilityDescriptions: {
+        gymDescription: "最先进的健身器材。",
+        poolDescription: "室内恒温游泳池。",
+        loungeDescription: "配备 Wi-Fi 和咖啡的舒适休息室。",
+        meetingDescription: "可供住户预订的会议室。",
+    }
   },
   profilePage: {
     guestProfile: "访客资料",
@@ -252,11 +266,169 @@ export default {
     pleaseWait: "请稍候，我们正在检查您的详细信息。",
     selectActiveService: "选择您的活动服务",
     multipleActiveServicesPrompt: "您有多个活动服务。请选择您要管理的服务。",
-    service: "服务：",
     period: "期间：",
     reservationNo: "预订号：",
     noActiveReservations: "您没有有效的预订。",
     continueToSelectedService: "继续使用所选服务",
-    logOut: "登出", // 与 common.logout 保持一致
+  },
+  maintenanceListPage: {
+    accessDenied: {
+        title: "访问被拒绝",
+        descriptionForResidents: "维护请求通常适用于住户。住宿客人可以使用服务请求。",
+    },
+    pageTitleService: "服务请求",
+    pageTitleMaintenance: "维护请求",
+    newRequestButtonService: "新服务请求",
+    newRequestButtonMaintenance: "新维护请求",
+    pageSubtitle: "查看和管理您在 {location} 的 {title}。",
+    yourRequestsTitle: "您的请求",
+    yourRequestsDescription: "所有已提交请求的列表。",
+    filterButton: "按状态筛选",
+    tableHeaders: {
+        submitted: "提交日期",
+        category: "类别",
+        description: "描述",
+        status: "状态",
+        actions: "操作",
+    },
+    status: {
+        submitted: "已提交",
+        inprogress: "进行中",
+        completed: "已完成",
+        cancelled: "已取消",
+    },
+    categories: {
+        plumbing: "管道",
+        appliance: "电器",
+        hvac: "暖通空调",
+        electrical: "电气",
+        'pest-control': "虫害防治",
+        'general-repair': "一般维修",
+        cleaning: "清洁",
+        other: "其他",
+    },
+    viewAction: "查看",
+    noRequestsMessage: "您还没有提交任何请求。",
+  },
+  maintenanceRequestPage: {
+    accessDenied: {
+        title: "访问被拒绝",
+        descriptionNotAvailable: "此功能不适用于您当前的服务类型。",
+    },
+    pageTitleService: "提交新服务请求",
+    pageTitleMaintenance: "提交新维护请求",
+    descriptionPlaceholderService: "例如：需要额外的毛巾、客房清洁、电视遥控器帮助。",
+    descriptionPlaceholderMaintenance: "例如：厨房水槽堵塞、空调不制冷、走廊灯泡需要更换。",
+    pageSubtitle: "请告诉我们您的 {location} 需要注意什么。",
+    categoryLabel: "类别",
+    categoryPlaceholder: "选择一个类别",
+    categories: {
+        plumbing: "管道",
+        electrical: "电气",
+        appliance: "电器",
+        hvac: "暖通空调",
+        pestControl: "虫害防治",
+        generalRepair: "一般维修",
+        cleaning: "清洁（适用于长住/短住服务）",
+        other: "其他",
+    },
+    descriptionLabel: "描述",
+    photosLabel: "上传照片（可选）",
+    filesSelected: "已选择 {count} 个文件：{names}",
+    urgentIssueNote: "对于紧急问题，请直接联系前台或管理部门。",
+    submitButton: "提交请求",
+    submittingButton: "正在提交...",
+    submitError: {
+        missingInfoTitle: "信息不完整",
+        missingInfoDescription: "请选择类别并提供描述。",
+    },
+    submitSuccess: {
+        title: "请求已提交",
+        description: "您的请求已收到。我们将尽快处理。",
+    },
+    unit: "单元",
+  },
+  rentPaymentPage: {
+    accessDenied: {
+        title: "访问被拒绝",
+        descriptionLiveOnly: "租金支付仅适用于住户。",
+    },
+    pageTitle: "租金和付款",
+    pageSubtitle: "管理您在 {branchName} ({unit}) 的租金支付并查看交易记录。",
+    upcomingPayment: {
+        title: "即将到期的付款",
+        dueDate: "到期日：{date}",
+        payNowButton: "立即付款",
+    },
+    paymentHistory: {
+        title: "付款历史",
+        description: "查看您过去的所有交易。",
+        filterButton: "筛选",
+        tableHeaders: {
+            date: "日期",
+            description: "描述",
+            amount: "金额",
+            status: "状态",
+            action: "操作",
+        },
+        retryAction: "重试",
+        noHistoryMessage: "未找到付款历史。",
+    },
+    managePaymentMethods: {
+        title: "管理付款方式",
+        description: "添加或更新您的首选付款方式。",
+        cardsOnFile: "您有 {count} 张尾号为 {lastFour} 的卡片。",
+        addNewButton: "添加新付款方式",
+    },
+    status: {
+        paid: "已支付",
+        pending: "待处理",
+        failed: "失败",
+    },
+    descriptions: {
+        JulyRent: "七月租金",
+        AmenityFeeGymAccessQ3: "设施费 - 第三季度健身房",
+        JuneRent: "六月租金",
+        LateFeeMay: "五月滞纳金",
+    }
+  },
+  aiConciergePage: {
+    durationDays: "{count} 天",
+    pageTitle: "Axxel AI 礼宾服务",
+    pageSubtitle: "获取您在 {location} 住宿的个性化推荐。",
+    currentLocationFallback: "您当前的位置",
+    notAvailable: {
+        title: "AI 礼宾服务不可用",
+        descriptionStayOnly: "此功能专供住宿客人使用。",
+    },
+    form: {
+        interestsLabel: "您的兴趣和偏好",
+        interestsPlaceholder: "例如：安静的咖啡馆、历史遗迹、家庭友好活动、意大利美食",
+        locationLabel: "当前位置",
+        locationPlaceholder: "例如：市中心酒店、市中心",
+        stayDurationLabel: "住宿时长",
+        stayDurationPlaceholder: "例如：3天、1周",
+        getRecommendationsButton: "获取推荐",
+        generatingButton: "生成中...",
+    },
+    toast: {
+        recommendationsReadyTitle: "推荐已准备就绪！",
+        recommendationsReadyDescription: "这里有一些为您住宿准备的想法。",
+        errorTitle: "错误",
+        errorDescription: "目前无法获取推荐。",
+    },
+    error: {
+        unexpectedError: "发生意外错误。",
+        failedToGetRecommendations: "获取推荐失败：{error}",
+        alertTitle: "错误",
+    },
+    recommendations: {
+        title: "您的个性化推荐",
+        restaurantsTitle: "餐厅",
+        attractionsTitle: "景点",
+        servicesTitle: "服务",
+        noResults: "未找到符合您条件的具体推荐。请尝试扩大您的兴趣范围！",
+        disclaimer: "AI 推荐仅供参考。请独立核实详细信息。",
+    }
   },
 } as const;

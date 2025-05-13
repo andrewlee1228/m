@@ -18,7 +18,11 @@ export default {
     viewEvents: 'View Events',
     viewPayments: 'View Payments',
     appLogoAriaLabel: 'Axxel Logo',
-    serviceType: 'Service Type:', // Added for select-reservation
+    serviceType: 'Service Type:',
+    userTypeLive: 'Live Resident',
+    userTypeStay: 'Stay Guest',
+    userTypeLongStay: 'Long Stay',
+    unit: 'Unit',
   },
   settingsPage: {
     title: 'Settings',
@@ -58,28 +62,25 @@ export default {
     switchServiceContext: 'Switch Service Context',
     switchServiceDescription: 'Select another active service to manage.',
     dashboard: 'Dashboard',
-    guestUser: 'Guest', // Added for guest display name
+    guestUser: 'Guest', 
   },
   bottomNav: {
     home: 'Home',
     profile: 'Profile',
     settings: 'Settings',
     payment: 'Payment',
-    maintenance: 'Requests', // Changed from Maintenance for brevity maybe? Or keep Maintenance
+    maintenance: 'Requests', 
     community: 'Community',
     booking: 'Booking',
-    services: 'Services', // For Stay Concierge/Requests
+    services: 'Services', 
     facilities: 'Facilities',
-    checkInOut: 'Check In/Out', // Added
-    concierge: 'Concierge', // Added
+    checkInOut: 'Check In/Out', 
+    concierge: 'Concierge', 
   },
   userTypeBadge: {
     Live: 'Live Resident',
     Stay: 'Stay Guest',
     LongStay: 'Long Stay',
-  },
-  appContext: {
-    // Potential translations for AppContext related messages if they were UI facing
   },
   dashboardPage: {
     loadingDashboard: 'Loading dashboard...',
@@ -89,13 +90,13 @@ export default {
     selectActiveServicePrompt: 'Please select an active service to manage from your available reservations.',
     selectAService: 'Select a Service',
     welcomeToAxxel: 'Welcome to Axxel!',
-    welcomeToAxxelName: 'Welcome to Axxel, {name}!', // Added personalized welcome
+    welcomeToAxxelName: 'Welcome to Axxel, {name}!',
     noActiveReservations: "It looks like you don't have any active reservations with us at the moment.",
     exploreProperties: 'Explore Properties',
     makeAReservation: 'Make a Reservation',
     unknownReservationType: 'Unknown reservation type. Please contact support.',
-    unexpectedState: 'An unexpected error occurred.', // Added
-    reloadPage: 'Reload Page', // Added
+    unexpectedState: 'An unexpected error occurred.', 
+    reloadPage: 'Reload Page', 
   },
   liveHomePage: {
     welcomeHome: "Welcome Home, {name}!",
@@ -150,6 +151,10 @@ export default {
     orderFood: "Order Food",
     requestAmenities: "Request Amenities",
     areaInfo: "Area Info",
+    defaultRoomName: "your room",
+    countdownDaysHours: "{days}d {hours}h",
+    countdownHoursMinutes: "{hours}h {minutes}m",
+    countdownMinutes: "{minutes}m",
   },
   bookingManagementPage: {
     bookingManagementNotApplicable: "Booking Management Not Applicable",
@@ -161,9 +166,6 @@ export default {
     reservationNumber: "Reservation Number:",
     checkInDate: "Check-in Date:",
     checkOutDate: "Check-out Date:",
-    viewFullDetails: "View Full Details",
-    extendStay: "Extend Stay",
-    modifyBooking: "Modify Booking",
     longStayOptions: "Long-Stay Options",
     exploreLongStayBenefits: "Explore benefits and services for your extended stay.",
     weeklyHousekeeping: "Weekly housekeeping schedules.",
@@ -225,6 +227,18 @@ export default {
     confirmBookingFor: "Confirm Booking for {facilityName}",
     bookingConfirmationMessage: "Booking {facilityName} for {date} {timeSlot}. (Mocked)",
     bookingSelectionError: "Please select a facility, date, and time slot (if applicable).",
+    facilityNames: {
+        gym: "Fitness Center",
+        pool: "Swimming Pool",
+        lounge: "Resident Lounge",
+        meeting: "Meeting Room",
+    },
+    facilityDescriptions: {
+        gymDescription: "State-of-the-art gym equipment.",
+        poolDescription: "Indoor heated swimming pool.",
+        loungeDescription: "Comfortable lounge with Wi-Fi and coffee.",
+        meetingDescription: "Bookable meeting room for residents.",
+    }
   },
   profilePage: {
     guestProfile: "Guest Profile",
@@ -252,11 +266,169 @@ export default {
     pleaseWait: "Please wait while we check your details.",
     selectActiveService: "Select Your Active Service",
     multipleActiveServicesPrompt: "You have multiple active services. Please choose which one you'd like to manage.",
-    service: "Service:", // Changed from Service Type for consistency maybe?
     period: "Period:",
     reservationNo: "Reservation #:",
     noActiveReservations: "You have no active reservations.",
     continueToSelectedService: "Continue to Selected Service",
-    logOut: "Log out", // Keep this consistent with common.logout
+  },
+  maintenanceListPage: {
+    accessDenied: {
+        title: "Access Denied",
+        descriptionForResidents: "Maintenance requests are typically for residents. Stay guests may use service requests.",
+    },
+    pageTitleService: "Service Requests",
+    pageTitleMaintenance: "Maintenance Requests",
+    newRequestButtonService: "New Service Request",
+    newRequestButtonMaintenance: "New Maintenance Request",
+    pageSubtitle: "View and manage your {title} for {location}.",
+    yourRequestsTitle: "Your Requests",
+    yourRequestsDescription: "A list of all submitted requests.",
+    filterButton: "Filter by Status",
+    tableHeaders: {
+        submitted: "Submitted",
+        category: "Category",
+        description: "Description",
+        status: "Status",
+        actions: "Actions",
+    },
+    status: {
+        submitted: "Submitted",
+        inprogress: "In Progress",
+        completed: "Completed",
+        cancelled: "Cancelled",
+    },
+    categories: { // Assuming these are the keys used in mock data or actual data
+        plumbing: "Plumbing",
+        appliance: "Appliance",
+        hvac: "HVAC",
+        electrical: "Electrical",
+        'pest-control': "Pest Control",
+        'general-repair': "General Repair",
+        cleaning: "Cleaning",
+        other: "Other",
+    },
+    viewAction: "View",
+    noRequestsMessage: "You haven't submitted any requests yet.",
+  },
+  maintenanceRequestPage: { // For New Maintenance Request Page
+    accessDenied: {
+        title: "Access Denied",
+        descriptionNotAvailable: "This feature is not available for your current service type.",
+    },
+    pageTitleService: "Submit a New Service Request",
+    pageTitleMaintenance: "Submit a New Maintenance Request",
+    descriptionPlaceholderService: "e.g., Need extra towels, room cleaning, or help with TV remote.",
+    descriptionPlaceholderMaintenance: "e.g., Kitchen sink is clogged, AC is not cooling, light bulb in hallway needs replacement.",
+    pageSubtitle: "Let us know what needs attention in your {location}.",
+    categoryLabel: "Category",
+    categoryPlaceholder: "Select a category",
+    categories: { // Corresponds to maintenanceCategories values/labelKeys
+        plumbing: "Plumbing",
+        electrical: "Electrical",
+        appliance: "Appliance",
+        hvac: "HVAC (Heating/Cooling)",
+        pestControl: "Pest Control",
+        generalRepair: "General Repair",
+        cleaning: "Cleaning (for LongStay/Stay services)",
+        other: "Other",
+    },
+    descriptionLabel: "Description",
+    photosLabel: "Upload Photos (Optional)",
+    filesSelected: "{count} file(s) selected: {names}",
+    urgentIssueNote: "For urgent issues, please contact the front desk or management directly.",
+    submitButton: "Submit Request",
+    submittingButton: "Submitting...",
+    submitError: {
+        missingInfoTitle: "Missing Information",
+        missingInfoDescription: "Please select a category and provide a description.",
+    },
+    submitSuccess: {
+        title: "Request Submitted",
+        description: "Your request has been received. We'll process it shortly.",
+    },
+    unit: "Unit", // if 'Unit' needs translation itself
+  },
+  rentPaymentPage: {
+    accessDenied: {
+        title: "Access Denied",
+        descriptionLiveOnly: "Rent payment is available for Live residents only.",
+    },
+    pageTitle: "Rent & Payments",
+    pageSubtitle: "Manage your rent payments and view transaction history for {branchName} ({unit}).",
+    upcomingPayment: {
+        title: "Upcoming Payment Due",
+        dueDate: "Due Date: {date}",
+        payNowButton: "Pay Now",
+    },
+    paymentHistory: {
+        title: "Payment History",
+        description: "Review all your past transactions.",
+        filterButton: "Filter",
+        tableHeaders: {
+            date: "Date",
+            description: "Description",
+            amount: "Amount",
+            status: "Status",
+            action: "Action",
+        },
+        retryAction: "Retry",
+        noHistoryMessage: "No payment history found.",
+    },
+    managePaymentMethods: {
+        title: "Manage Payment Methods",
+        description: "Add or update your preferred payment methods.",
+        cardsOnFile: "You have {count} card on file ending in {lastFour}.",
+        addNewButton: "Add New Payment Method",
+    },
+    status: { // For payment statuses
+        paid: "Paid",
+        pending: "Pending",
+        failed: "Failed",
+    },
+    descriptions: { // Example for translating payment descriptions if they are keys
+        JulyRent: "July Rent",
+        AmenityFeeGymAccessQ3: "Amenity Fee - Gym Access Q3",
+        JuneRent: "June Rent",
+        LateFeeMay: "Late Fee - May",
+    }
+  },
+  aiConciergePage: {
+    durationDays: "{count, plural, =1 {# day} other {# days}}",
+    pageTitle: "Axxel AI Concierge",
+    pageSubtitle: "Get personalized recommendations for your stay at {location}.",
+    currentLocationFallback: "your current location",
+    notAvailable: {
+        title: "AI Concierge Not Available",
+        descriptionStayOnly: "This feature is exclusively for Stay guests.",
+    },
+    form: {
+        interestsLabel: "Your Interests & Preferences",
+        interestsPlaceholder: "e.g., quiet cafes, historical sites, family-friendly activities, italian food",
+        locationLabel: "Current Location",
+        locationPlaceholder: "e.g., City Center Hotel, Downtown",
+        stayDurationLabel: "Duration of Stay",
+        stayDurationPlaceholder: "e.g., 3 days, 1 week",
+        getRecommendationsButton: "Get Recommendations",
+        generatingButton: "Generating...",
+    },
+    toast: {
+        recommendationsReadyTitle: "Recommendations Ready!",
+        recommendationsReadyDescription: "Here are some ideas for your stay.",
+        errorTitle: "Error",
+        errorDescription: "Could not fetch recommendations at this time.",
+    },
+    error: {
+        unexpectedError: "An unexpected error occurred.",
+        failedToGetRecommendations: "Failed to get recommendations: {error}",
+        alertTitle: "Error",
+    },
+    recommendations: {
+        title: "Your Personalized Recommendations",
+        restaurantsTitle: "Restaurants",
+        attractionsTitle: "Attractions",
+        servicesTitle: "Services",
+        noResults: "No specific recommendations found for your criteria. Try broadening your interests!",
+        disclaimer: "AI recommendations are for informational purposes. Please verify details independently.",
+    }
   },
 } as const;

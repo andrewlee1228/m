@@ -3,7 +3,7 @@
 import type { Reservation, Payment, MaintenanceRequest, CommunityEvent } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { List, DollarSign, Wrench, CalendarDays } from 'lucide-react'; // Removed ArrowRight
+import { List, DollarSign, Wrench, CalendarDays } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
@@ -13,7 +13,6 @@ interface LiveHomeProps {
   reservation: Reservation;
 }
 
-// Mock Data - Titles and descriptions ideally come from a translatable source
 const mockPayments: Payment[] = [
   { id: 'pay1', amount: 1200, currency: 'USD', date: '2024-07-01', status: 'Paid', description: 'July Rent' },
   { id: 'pay2', amount: 50, currency: 'USD', date: '2024-07-05', status: 'Pending', description: 'Amenity Fee' },
@@ -30,7 +29,7 @@ const mockCommunityEvents: CommunityEvent[] = [
 export default function LiveHome({ user, reservation }: LiveHomeProps) {
   const t = useScopedI18n('liveHomePage');
   const commonT = useScopedI18n('common');
-  const currentLocale = useCurrentLocale();
+  const currentLocale = useCurrentLocale(); // Get current locale
 
   const upcomingPayment = mockPayments.find(p => p.status === 'Pending') || mockPayments.find(p => new Date(p.date) >= new Date() && p.status !== 'Paid');
   const recentRequest = mockMaintenanceRequests[0];
@@ -50,8 +49,8 @@ export default function LiveHome({ user, reservation }: LiveHomeProps) {
             <Image 
                 src="https://picsum.photos/seed/livehome/1200/400" 
                 alt="Apartment building exterior" 
-                layout="fill"
-                objectFit="cover"
+                fill // Use fill instead of layout="fill"
+                className="object-cover" // Use objectFit directly as a class
                 data-ai-hint="apartment building"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end">
@@ -81,7 +80,7 @@ export default function LiveHome({ user, reservation }: LiveHomeProps) {
           </CardContent>
           <CardFooter>
             <Button asChild className="w-full" variant="outline">
-              <Link href="/dashboard/payment"><List className="mr-2 h-4 w-4" /> {commonT('viewPayments')}</Link>
+              <Link href={`/${currentLocale}/dashboard/payment`}><List className="mr-2 h-4 w-4" /> {commonT('viewPayments')}</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -103,10 +102,10 @@ export default function LiveHome({ user, reservation }: LiveHomeProps) {
           </CardContent>
            <CardFooter className="flex space-x-2">
             <Button asChild className="flex-1" variant="outline">
-              <Link href="/dashboard/maintenance/new">{commonT('newRequest')}</Link>
+              <Link href={`/${currentLocale}/dashboard/maintenance/new`}>{commonT('newRequest')}</Link>
             </Button>
              <Button asChild className="flex-1" variant="outline">
-              <Link href="/dashboard/maintenance"><List className="mr-2 h-4 w-4" />{commonT('allRequests')}</Link>
+              <Link href={`/${currentLocale}/dashboard/maintenance`}><List className="mr-2 h-4 w-4" />{commonT('allRequests')}</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -130,7 +129,7 @@ export default function LiveHome({ user, reservation }: LiveHomeProps) {
           </CardContent>
           <CardFooter>
             <Button asChild className="w-full" variant="outline">
-              <Link href="/dashboard/community"><List className="mr-2 h-4 w-4" /> {commonT('viewEvents')}</Link>
+              <Link href={`/${currentLocale}/dashboard/community`}><List className="mr-2 h-4 w-4" /> {commonT('viewEvents')}</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -142,19 +141,19 @@ export default function LiveHome({ user, reservation }: LiveHomeProps) {
         </CardHeader>
         <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <Button variant="outline" size="lg" className="flex-col h-auto py-4" asChild>
-                <Link href="/dashboard/payment">
+                <Link href={`/${currentLocale}/dashboard/payment`}>
                     <DollarSign className="h-8 w-8 mb-1 text-primary"/>
                     {t('payRent')}
                 </Link>
             </Button>
             <Button variant="outline" size="lg" className="flex-col h-auto py-4" asChild>
-                <Link href="/dashboard/maintenance/new">
+                <Link href={`/${currentLocale}/dashboard/maintenance/new`}>
                     <Wrench className="h-8 w-8 mb-1 text-primary"/>
                     {t('requestService')}
                 </Link>
             </Button>
              <Button variant="outline" size="lg" className="flex-col h-auto py-4" asChild>
-                <Link href="/dashboard/community">
+                <Link href={`/${currentLocale}/dashboard/community`}>
                     <CalendarDays className="h-8 w-8 mb-1 text-primary"/>
                     {t('communityHub')}
                 </Link>

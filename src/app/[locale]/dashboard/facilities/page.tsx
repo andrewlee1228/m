@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-// Import locale-specific date-fns if needed, or rely on currentLocale for formatting
-// import { enUS, ko, zhCN } from 'date-fns/locale'; 
+// Import locale-specific date-fns objects
+import { enUS, ko, zhCN } from 'date-fns/locale'; 
 import Image from 'next/image';
 import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
 import { Label } from '@/components/ui/label';
@@ -17,25 +17,25 @@ import { Label } from '@/components/ui/label';
 
 interface Facility {
   id: string;
-  name: string;
-  description: string;
+  nameKey: keyof typeof import('@/locales/en').default.facilitiesPage.facilityNames; // For translation
+  descriptionKey: keyof typeof import('@/locales/en').default.facilitiesPage.facilityDescriptions; // For translation
   icon: React.ElementType;
   imageHint: string; 
   availableSlots?: string[]; 
 }
 
-// Mock data for facilities - names and descriptions ideally come from a translatable source
+// Mock data for facilities - using keys for translation
 const mockFacilities: Facility[] = [
-  { id: 'gym', name: 'Fitness Center', description: 'State-of-the-art gym equipment.', icon: Dumbbell, imageHint: "gym fitness", availableSlots: ["07:00-08:00", "09:00-10:00", "17:00-18:00"] },
-  { id: 'pool', name: 'Swimming Pool', description: 'Indoor heated swimming pool.', icon: Waves, imageHint: "swimming pool", availableSlots: ["10:00-11:00", "14:00-15:00"] },
-  { id: 'lounge', name: 'Resident Lounge', description: 'Comfortable lounge with Wi-Fi and coffee.', icon: Coffee, imageHint: "lounge area" },
-  { id: 'meeting', name: 'Meeting Room', description: 'Bookable meeting room for residents.', icon: Users2, imageHint: "meeting room", availableSlots: ["09:00-11:00", "14:00-16:00"] },
+  { id: 'gym', nameKey: 'gym', descriptionKey: 'gymDescription', icon: Dumbbell, imageHint: "gym fitness", availableSlots: ["07:00-08:00", "09:00-10:00", "17:00-18:00"] },
+  { id: 'pool', nameKey: 'pool', descriptionKey: 'poolDescription', icon: Waves, imageHint: "swimming pool", availableSlots: ["10:00-11:00", "14:00-15:00"] },
+  { id: 'lounge', nameKey: 'lounge', descriptionKey: 'loungeDescription', icon: Coffee, imageHint: "lounge area" },
+  { id: 'meeting', nameKey: 'meeting', descriptionKey: 'meetingDescription', icon: Users2, imageHint: "meeting room", availableSlots: ["09:00-11:00", "14:00-16:00"] },
 ];
 
 export default function FacilitiesPage() {
   const { appContext } = useAppContext();
   const t = useScopedI18n('facilitiesPage');
-  const currentLocale = useCurrentLocale(); // For date formatting
+  const currentLocale = useCurrentLocale(); 
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
@@ -55,11 +55,17 @@ export default function FacilitiesPage() {
   
   const { activeReservation } = appContext;
 
+  const getDateFnsLocale = (localeString: string) => {
+    if (localeString === 'ko') return ko;
+    if (localeString === 'zh') return zhCN;
+    return enUS; 
+  };
+
   const handleBookFacility = () => {
     if (selectedFacility && selectedDate && (selectedFacility.availableSlots ? selectedSlot : true)) {
-      // Use currentLocale for formatting date in alert for consistency
+      const facilityName = t(`facilityNames.${selectedFacility.nameKey}`);
       const formattedDate = format(selectedDate, "PPP", { locale: getDateFnsLocale(currentLocale) });
-      alert(t('bookingConfirmationMessage', { facilityName: selectedFacility.name, date: formattedDate, timeSlot: selectedSlot ? ` at ${selectedSlot}` : '' }));
+      alert(t('bookingConfirmationMessage', { facilityName: facilityName, date: formattedDate, timeSlot: selectedSlot ? ` at ${selectedSlot}` : '' }));
       setSelectedFacility(null);
       setSelectedSlot(null);
     } else {
@@ -67,12 +73,8 @@ export default function FacilitiesPage() {
     }
   };
   
-  // Helper to get date-fns locale object (simplified)
-  const getDateFnsLocale = (localeString: string) => {
-    // This is a placeholder. For a real app, you'd map locales to date-fns locale objects
-    // e.g., if (localeString === 'ko') return require('date-fns/locale/ko');
-    return undefined; // Uses default if specific locale not found or mapped
-  };
+  const translatedFacilityName = (facility: Facility) => t(`facilityNames.${facility.nameKey}`);
+  const translatedFacilityDescription = (facility: Facility) => t(`facilityDescriptions.${facility.descriptionKey}`);
 
 
   return (
@@ -98,9 +100,9 @@ export default function FacilitiesPage() {
             <div className="relative h-40 w-full">
                 <Image 
                     src={`https://picsum.photos/seed/${facility.id}/400/200`} 
-                    alt={facility.name} // Facility names could be translated if they were keys
-                    layout="fill" 
-                    objectFit="cover"
+                    alt={translatedFacilityName(facility)} 
+                    fill // Use fill instead of layout="fill"
+                    className="object-cover" // Use objectFit directly as a class
                     data-ai-hint={facility.imageHint}
                 />
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -108,10 +110,10 @@ export default function FacilitiesPage() {
                 </div>
             </div>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xl">{facility.name}</CardTitle>
+              <CardTitle className="text-xl">{translatedFacilityName(facility)}</CardTitle>
             </CardHeader>
             <CardContent className="pb-4">
-              <p className="text-sm text-muted-foreground line-clamp-2">{facility.description}</p>
+              <p className="text-sm text-muted-foreground line-clamp-2">{translatedFacilityDescription(facility)}</p>
             </CardContent>
           </Card>
         ))}
@@ -120,7 +122,7 @@ export default function FacilitiesPage() {
       {selectedFacility && (
         <Card className="mt-8 shadow-lg">
           <CardHeader>
-            <CardTitle>{t('bookFacilityTitle', { facilityName: selectedFacility.name})}</CardTitle>
+            <CardTitle>{t('bookFacilityTitle', { facilityName: translatedFacilityName(selectedFacility)})}</CardTitle>
             <CardDescription>{t('selectDateAndTime')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -143,7 +145,7 @@ export default function FacilitiesPage() {
                         onSelect={setSelectedDate}
                         initialFocus
                         disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                        locale={getDateFnsLocale(currentLocale)} // Pass locale to Calendar
+                        locale={getDateFnsLocale(currentLocale)} 
                         />
                     </PopoverContent>
                 </Popover>
@@ -172,7 +174,7 @@ export default function FacilitiesPage() {
               onClick={handleBookFacility}
               disabled={!selectedDate || (!!selectedFacility.availableSlots && !selectedSlot)}
             >
-              {t('confirmBookingFor', { facilityName: selectedFacility.name })}
+              {t('confirmBookingFor', { facilityName: translatedFacilityName(selectedFacility) })}
             </Button>
           </CardFooter>
         </Card>

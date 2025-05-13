@@ -18,13 +18,11 @@ export default function SettingsPage() {
   const changeLocale = useChangeLocale();
   const currentLocale = useCurrentLocale();
 
-  // Mock state for settings - in a real app, these would interact with user preferences context or backend
   const [notifications, setNotifications] = React.useState({
     push: true,
     email: false,
     sms: false,
   });
-  // Theme state is not fully implemented here, just for UI demo
   const [theme, setTheme] = React.useState('system'); 
 
   const handleNotificationChange = (type: keyof typeof notifications, value: boolean) => {
@@ -126,19 +124,19 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-2">
             <Button variant="ghost" className="w-full justify-between" asChild>
-                <Link href="/help/faq">
+                <Link href={`/${currentLocale}/help/faq`}>
                     <span>{t('help.faq')}</span>
                     <ChevronRight className="h-4 w-4" />
                 </Link>
             </Button>
              <Button variant="ghost" className="w-full justify-between" asChild>
-                <Link href="/help/tutorials">
+                <Link href={`/${currentLocale}/help/tutorials`}>
                     <span>{t('help.tutorials')}</span>
                     <ChevronRight className="h-4 w-4" />
                 </Link>
             </Button>
              <Button variant="ghost" className="w-full justify-between" asChild>
-                <Link href="/help/contact-support">
+                <Link href={`/${currentLocale}/help/contact-support`}>
                     <span>{t('help.contactSupport')}</span>
                     <ChevronRight className="h-4 w-4" />
                 </Link>

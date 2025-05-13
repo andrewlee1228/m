@@ -18,7 +18,11 @@ export default {
     viewEvents: '이벤트 보기',
     viewPayments: '결제 내역 보기',
     appLogoAriaLabel: 'Axxel 로고',
-    serviceType: '서비스 유형:', // Added for select-reservation
+    serviceType: '서비스 유형:',
+    userTypeLive: '거주자',
+    userTypeStay: '숙박 게스트',
+    userTypeLongStay: '장기 숙박',
+    unit: '호실',
   },
   settingsPage: {
     title: '설정',
@@ -58,28 +62,25 @@ export default {
     switchServiceContext: '서비스 컨텍스트 전환',
     switchServiceDescription: '관리할 다른 활성 서비스를 선택하세요.',
     dashboard: '대시보드',
-    guestUser: '게스트', // Added for guest display name
+    guestUser: '게스트', 
   },
   bottomNav: {
     home: '홈',
     profile: '프로필',
     settings: '설정',
     payment: '결제',
-    maintenance: '요청', // Changed
+    maintenance: '요청', 
     community: '커뮤니티',
     booking: '예약',
     services: '서비스',
     facilities: '시설',
-    checkInOut: '체크인/아웃', // Added
-    concierge: '컨시어지', // Added
+    checkInOut: '체크인/아웃', 
+    concierge: '컨시어지', 
   },
   userTypeBadge: {
     Live: '거주자',
     Stay: '숙박 게스트',
     LongStay: '장기 숙박',
-  },
-  appContext: {
-    // Potential translations for AppContext related messages if they were UI facing
   },
   dashboardPage: {
     loadingDashboard: '대시보드 로딩 중...',
@@ -89,13 +90,13 @@ export default {
     selectActiveServicePrompt: '사용 가능한 예약 중에서 관리할 활성 서비스를 선택해주세요.',
     selectAService: '서비스 선택',
     welcomeToAxxel: 'Axxel에 오신 것을 환영합니다!',
-    welcomeToAxxelName: '{name}님, Axxel에 오신 것을 환영합니다!', // Added personalized welcome
+    welcomeToAxxelName: '{name}님, Axxel에 오신 것을 환영합니다!', 
     noActiveReservations: '현재 이용 중인 예약이 없는 것 같습니다.',
     exploreProperties: '시설 둘러보기',
     makeAReservation: '예약하기',
     unknownReservationType: '알 수 없는 예약 유형입니다. 지원팀에 문의해주세요.',
-    unexpectedState: '예상치 못한 오류가 발생했습니다.', // Added
-    reloadPage: '페이지 새로고침', // Added
+    unexpectedState: '예상치 못한 오류가 발생했습니다.', 
+    reloadPage: '페이지 새로고침', 
   },
   liveHomePage: {
     welcomeHome: "{name}님, 집에 오신 것을 환영합니다!",
@@ -150,6 +151,10 @@ export default {
     orderFood: "음식 주문",
     requestAmenities: "편의용품 요청",
     areaInfo: "지역 정보",
+    defaultRoomName: "객실",
+    countdownDaysHours: "{days}일 {hours}시간",
+    countdownHoursMinutes: "{hours}시간 {minutes}분",
+    countdownMinutes: "{minutes}분",
   },
   bookingManagementPage: {
     bookingManagementNotApplicable: "예약 관리 해당 없음",
@@ -161,9 +166,6 @@ export default {
     reservationNumber: "예약 번호:",
     checkInDate: "체크인 날짜:",
     checkOutDate: "체크아웃 날짜:",
-    viewFullDetails: "전체 정보 보기",
-    extendStay: "숙박 연장",
-    modifyBooking: "예약 변경",
     longStayOptions: "장기 숙박 옵션",
     exploreLongStayBenefits: "장기 숙박을 위한 혜택 및 서비스를 살펴보세요.",
     weeklyHousekeeping: "주간 객실 청소 일정.",
@@ -225,6 +227,18 @@ export default {
     confirmBookingFor: "{facilityName} 예약 확인",
     bookingConfirmationMessage: "{facilityName} {date} {timeSlot} 예약 완료. (모의)",
     bookingSelectionError: "시설, 날짜, 시간대(해당하는 경우)를 선택해주세요.",
+    facilityNames: {
+        gym: "피트니스 센터",
+        pool: "수영장",
+        lounge: "주민 라운지",
+        meeting: "회의실",
+    },
+    facilityDescriptions: {
+        gymDescription: "최신식 헬스장 설비.",
+        poolDescription: "실내 온수 수영장.",
+        loungeDescription: "Wi-Fi와 커피가 제공되는 편안한 라운지.",
+        meetingDescription: "주민 예약 가능 회의실.",
+    }
   },
   profilePage: {
     guestProfile: "게스트 프로필",
@@ -252,11 +266,169 @@ export default {
     pleaseWait: "정보를 확인하는 동안 잠시 기다려주세요.",
     selectActiveService: "활성 서비스 선택",
     multipleActiveServicesPrompt: "여러 활성 서비스가 있습니다. 관리할 서비스를 선택해주세요.",
-    service: "서비스:",
     period: "기간:",
     reservationNo: "예약 번호:",
     noActiveReservations: "활성 예약이 없습니다.",
     continueToSelectedService: "선택한 서비스로 계속",
-    logOut: "로그아웃", // common.logout 과 일치하도록 함
+  },
+  maintenanceListPage: {
+    accessDenied: {
+        title: "접근 거부됨",
+        descriptionForResidents: "유지보수 요청은 일반적으로 거주자를 위한 것입니다. 숙박 고객은 서비스 요청을 이용할 수 있습니다.",
+    },
+    pageTitleService: "서비스 요청",
+    pageTitleMaintenance: "유지보수 요청",
+    newRequestButtonService: "새 서비스 요청",
+    newRequestButtonMaintenance: "새 유지보수 요청",
+    pageSubtitle: "{location}의 {title} 보기 및 관리.",
+    yourRequestsTitle: "내 요청",
+    yourRequestsDescription: "제출된 모든 요청 목록입니다.",
+    filterButton: "상태별 필터",
+    tableHeaders: {
+        submitted: "제출일",
+        category: "카테고리",
+        description: "설명",
+        status: "상태",
+        actions: "작업",
+    },
+    status: {
+        submitted: "제출됨",
+        inprogress: "진행 중",
+        completed: "완료됨",
+        cancelled: "취소됨",
+    },
+    categories: {
+        plumbing: "배관",
+        appliance: "가전제품",
+        hvac: "냉난방",
+        electrical: "전기",
+        'pest-control': "해충 방제",
+        'general-repair': "일반 수리",
+        cleaning: "청소",
+        other: "기타",
+    },
+    viewAction: "보기",
+    noRequestsMessage: "아직 제출한 요청이 없습니다.",
+  },
+  maintenanceRequestPage: {
+    accessDenied: {
+        title: "접근 거부됨",
+        descriptionNotAvailable: "현재 서비스 유형에서는 이 기능을 사용할 수 없습니다.",
+    },
+    pageTitleService: "새 서비스 요청 제출",
+    pageTitleMaintenance: "새 유지보수 요청 제출",
+    descriptionPlaceholderService: "예: 추가 수건 필요, 객실 청소, TV 리모컨 도움.",
+    descriptionPlaceholderMaintenance: "예: 주방 싱크대 막힘, 에어컨 냉방 안됨, 복도 전구 교체 필요.",
+    pageSubtitle: "{location}에 주의가 필요한 사항을 알려주세요.",
+    categoryLabel: "카테고리",
+    categoryPlaceholder: "카테고리 선택",
+    categories: {
+        plumbing: "배관",
+        electrical: "전기",
+        appliance: "가전제품",
+        hvac: "냉난방 장치",
+        pestControl: "해충 방제",
+        generalRepair: "일반 수리",
+        cleaning: "청소 (장기/단기 숙박 서비스용)",
+        other: "기타",
+    },
+    descriptionLabel: "설명",
+    photosLabel: "사진 업로드 (선택 사항)",
+    filesSelected: "{count}개 파일 선택됨: {names}",
+    urgentIssueNote: "긴급한 문제의 경우 프런트 데스크 또는 관리팀에 직접 문의하십시오.",
+    submitButton: "요청 제출",
+    submittingButton: "제출 중...",
+    submitError: {
+        missingInfoTitle: "정보 누락",
+        missingInfoDescription: "카테고리를 선택하고 설명을 입력하십시오.",
+    },
+    submitSuccess: {
+        title: "요청 제출됨",
+        description: "요청이 접수되었습니다. 곧 처리해 드리겠습니다.",
+    },
+    unit: "호실",
+  },
+  rentPaymentPage: {
+    accessDenied: {
+        title: "접근 거부됨",
+        descriptionLiveOnly: "임대료 결제는 거주자만 가능합니다.",
+    },
+    pageTitle: "임대료 및 결제",
+    pageSubtitle: "{branchName} ({unit})의 임대료 결제를 관리하고 거래 내역을 확인하세요.",
+    upcomingPayment: {
+        title: "예정된 결제",
+        dueDate: "납부 기한: {date}",
+        payNowButton: "지금 결제",
+    },
+    paymentHistory: {
+        title: "결제 내역",
+        description: "과거 모든 거래를 검토하세요.",
+        filterButton: "필터",
+        tableHeaders: {
+            date: "날짜",
+            description: "설명",
+            amount: "금액",
+            status: "상태",
+            action: "작업",
+        },
+        retryAction: "재시도",
+        noHistoryMessage: "결제 내역이 없습니다.",
+    },
+    managePaymentMethods: {
+        title: "결제 수단 관리",
+        description: "선호하는 결제 수단을 추가하거나 업데이트하세요.",
+        cardsOnFile: "{count}개의 카드가 등록되어 있으며, 마지막 네 자리는 {lastFour}입니다.",
+        addNewButton: "새 결제 수단 추가",
+    },
+    status: {
+        paid: "결제 완료",
+        pending: "대기 중",
+        failed: "실패",
+    },
+    descriptions: {
+        JulyRent: "7월 임대료",
+        AmenityFeeGymAccessQ3: "시설 이용료 - 3분기 헬스장",
+        JuneRent: "6월 임대료",
+        LateFeeMay: "5월 연체료",
+    }
+  },
+  aiConciergePage: {
+    durationDays: "{count}일",
+    pageTitle: "Axxel AI 컨시어지",
+    pageSubtitle: "{location}에서의 숙박을 위한 맞춤 추천을 받아보세요.",
+    currentLocationFallback: "현재 위치",
+    notAvailable: {
+        title: "AI 컨시어지 사용 불가",
+        descriptionStayOnly: "이 기능은 숙박 고객 전용입니다.",
+    },
+    form: {
+        interestsLabel: "관심사 및 선호도",
+        interestsPlaceholder: "예: 조용한 카페, 역사 유적지, 가족 친화적 활동, 이탈리아 음식",
+        locationLabel: "현재 위치",
+        locationPlaceholder: "예: 시티 센터 호텔, 다운타운",
+        stayDurationLabel: "숙박 기간",
+        stayDurationPlaceholder: "예: 3일, 1주일",
+        getRecommendationsButton: "추천 받기",
+        generatingButton: "생성 중...",
+    },
+    toast: {
+        recommendationsReadyTitle: "추천 준비 완료!",
+        recommendationsReadyDescription: "숙박을 위한 몇 가지 아이디어입니다.",
+        errorTitle: "오류",
+        errorDescription: "현재 추천을 가져올 수 없습니다.",
+    },
+    error: {
+        unexpectedError: "예상치 못한 오류가 발생했습니다.",
+        failedToGetRecommendations: "추천을 가져오는 데 실패했습니다: {error}",
+        alertTitle: "오류",
+    },
+    recommendations: {
+        title: "맞춤 추천",
+        restaurantsTitle: "레스토랑",
+        attractionsTitle: "명소",
+        servicesTitle: "서비스",
+        noResults: "귀하의 기준에 맞는 추천을 찾을 수 없습니다. 관심사를 넓혀보세요!",
+        disclaimer: "AI 추천은 정보 제공 목적으로만 제공됩니다. 세부 정보는 직접 확인하시기 바랍니다.",
+    }
   },
 } as const;

@@ -13,7 +13,6 @@ interface LongStayHomeProps {
   reservation: Reservation;
 }
 
-// Mock Data
 const mockLongStayEvents: CommunityEvent[] = [
   { id: 'ls-evt1', title: 'Resident Networking Mixer', description: 'Meet fellow long-stay residents.', date: '2024-07-25T18:00:00Z', location: 'Lounge Area', branchName: 'Executive Suites' },
   { id: 'ls-evt2', title: 'Wellness Workshop', description: 'Tips for healthy long-term stays.', date: '2024-08-10T10:00:00Z', location: 'Conference Room A', branchName: 'Executive Suites' },
@@ -21,7 +20,7 @@ const mockLongStayEvents: CommunityEvent[] = [
 
 export default function LongStayHome({ user, reservation }: LongStayHomeProps) {
   const t = useScopedI18n('longStayHomePage');
-  const currentLocale = useCurrentLocale();
+  const currentLocale = useCurrentLocale(); // Get current locale
 
   const upcomingEvent = mockLongStayEvents.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
@@ -39,8 +38,8 @@ export default function LongStayHome({ user, reservation }: LongStayHomeProps) {
             <Image 
                 src={`https://picsum.photos/seed/longstay_${reservation.branchName.replace(/\s+/g, '')}/1200/400`}
                 alt={`${reservation.branchName} apartment complex`}
-                layout="fill"
-                objectFit="cover"
+                fill // Use fill instead of layout="fill"
+                className="object-cover" // Use objectFit directly as a class
                 data-ai-hint="modern apartment"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end">
@@ -64,7 +63,7 @@ export default function LongStayHome({ user, reservation }: LongStayHomeProps) {
           </CardContent>
           <CardFooter>
             <Button asChild className="w-full" variant="outline">
-              <Link href="/dashboard/booking/extend"><PlusCircle className="mr-2 h-4 w-4" /> {t('extendYourStay')}</Link>
+              <Link href={`/${currentLocale}/dashboard/booking/extend`}><PlusCircle className="mr-2 h-4 w-4" /> {t('extendYourStay')}</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -82,7 +81,7 @@ export default function LongStayHome({ user, reservation }: LongStayHomeProps) {
           </CardContent>
           <CardFooter>
             <Button asChild className="w-full" variant="outline">
-              <Link href="/dashboard/facilities"><Info className="mr-2 h-4 w-4" /> {t('viewAndBookFacilities')}</Link>
+              <Link href={`/${currentLocale}/dashboard/facilities`}><Info className="mr-2 h-4 w-4" /> {t('viewAndBookFacilities')}</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -102,7 +101,7 @@ export default function LongStayHome({ user, reservation }: LongStayHomeProps) {
                     {t('eventDetails', { date: formatDate(upcomingEvent.date), time: formatTime(upcomingEvent.date), location: upcomingEvent.location })}
                     </p>
                     <Button variant="link" size="sm" className="p-0 h-auto mt-1" asChild>
-                        <Link href="/dashboard/community">{t('viewAllEvents')}</Link>
+                        <Link href={`/${currentLocale}/dashboard/community`}>{t('viewAllEvents')}</Link>
                     </Button>
                 </div>
                 ) : (
@@ -113,7 +112,7 @@ export default function LongStayHome({ user, reservation }: LongStayHomeProps) {
                 <h3 className="font-semibold flex items-center"><Wrench className="mr-2 h-5 w-5 text-primary"/> {t('longStayServices')}</h3>
                 <p className="text-sm text-muted-foreground mt-1">{t('specializedServicesDescription')}</p>
                  <Button variant="link" size="sm" className="p-0 h-auto mt-1" asChild>
-                    <Link href="/dashboard/maintenance?type=longstay">{t('requestServices')}</Link>
+                    <Link href={`/${currentLocale}/dashboard/maintenance?type=longstay`}>{t('requestServices')}</Link>
                 </Button>
             </div>
         </CardContent>

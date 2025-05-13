@@ -46,7 +46,8 @@ export default function CheckInOutPage() {
   checkoutEndOfDay.setHours(23, 59, 59, 999);
 
   const canCheckIn = now >= checkinStartOfDay && now < checkoutEndOfDay;
-  const canCheckOut = now >= checkinStartOfDay;
+  // Logic adjustment: canCheckOut should be true from check-in day onwards until end of checkout day
+  const canCheckOut = now >= checkinStartOfDay && now <= checkoutEndOfDay;
 
   const formatDate = (date: Date) => date.toLocaleDateString(currentLocale);
   const formatTime = (date: Date) => date.toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
@@ -60,6 +61,7 @@ export default function CheckInOutPage() {
     await new Promise(resolve => setTimeout(resolve, 1500));
     setIsCheckingOut(false);
     toast({ title: t('checkoutSuccessfulToast'), description: t('thankYouFeedbackToast') });
+    // Potentially update app context or redirect after checkout
   };
 
   const SmileyButton = ({ Icon, value, currentRating, onClick }: {Icon: React.ElementType, value: number, currentRating: number | null, onClick: (value: number) => void}) => (
@@ -71,8 +73,8 @@ export default function CheckInOutPage() {
             ? value <= 2 
               ? 'bg-destructive text-destructive-foreground scale-110' 
               : value === 3 
-              ? 'bg-yellow-500 text-white scale-110' 
-              : 'bg-green-500 text-white scale-110'
+              ? 'bg-yellow-500 text-white scale-110' // Assuming yellow for neutral, adjust as per theme
+              : 'bg-green-500 text-white scale-110' // Assuming green for positive
             : 'hover:bg-muted'
         }`}
         onClick={() => onClick(value)}
@@ -89,8 +91,8 @@ export default function CheckInOutPage() {
              <Image
                 src={`https://picsum.photos/seed/checkin_${activeReservation.branchName.replace(/\s+/g, '')}/600/200`}
                 alt="Hotel lobby or welcome area"
-                layout="fill"
-                objectFit="cover"
+                fill // Use fill instead of layout="fill"
+                className="object-cover" // Use objectFit directly as a class
                 data-ai-hint="hotel lobby"
             />
          </div>
@@ -100,7 +102,8 @@ export default function CheckInOutPage() {
         </CardHeader>
       </Card>
 
-      {canCheckIn && !canCheckOut && now < checkoutDate && (
+      {/* Check-in section: Show if canCheckIn AND not yet past the check-in day's practical end (e.g. before checkout day starts) */}
+      {canCheckIn && now < new Date(checkoutDate.getFullYear(), checkoutDate.getMonth(), checkoutDate.getDate()) && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center"><LogIn className="mr-2 h-5 w-5 text-primary" /> {t('checkIn')}</CardTitle>
@@ -116,11 +119,12 @@ export default function CheckInOutPage() {
         </Card>
       )}
 
-      {canCheckOut && now < checkoutEndOfDay && (
+      {/* Checkout section: Show if canCheckOut AND not yet past the checkout day's end */}
+      {canCheckOut && now <= checkoutEndOfDay && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center"><LogOut className="mr-2 h-5 w-5 text-destructive" /> {t('checkOut')}</CardTitle>
-            <CardDescription>{t('standardCheckoutTimeInfo', { time: formatTime(new Date(checkoutDate.setHours(11,0,0,0))), date: formatDate(checkoutDate) })}</CardDescription>
+            <CardDescription>{t('standardCheckoutTimeInfo', { time: formatTime(new Date(new Date(checkoutDate).setHours(11,0,0,0))), date: formatDate(checkoutDate) })}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -150,6 +154,8 @@ export default function CheckInOutPage() {
           </CardFooter>
         </Card>
       )}
+
+       {/* Before check-in period */}
        {!canCheckIn && now < checkinStartOfDay && (
          <Card>
             <CardHeader>
@@ -161,6 +167,8 @@ export default function CheckInOutPage() {
             </CardContent>
          </Card>
        )}
+
+       {/* After checkout period */}
        {now > checkoutEndOfDay && ( 
          <Card>
             <CardHeader>
@@ -168,7 +176,9 @@ export default function CheckInOutPage() {
             </CardHeader>
             <CardContent>
                 <p>{t('thankYouForStaying', { branchName: activeReservation.branchName })}</p>
-                <Button variant="link" asChild className="mt-2 px-0"><Link href="/new-booking">{t('bookAnotherStay')}</Link></Button>
+                <Button variant="link" asChild className="mt-2 px-0">
+                    <Link href={`/${currentLocale}/new-booking`}>{t('bookAnotherStay')}</Link>
+                </Button>
             </CardContent>
          </Card>
        )}

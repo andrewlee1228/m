@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { useAppContext } from '@/context/AppContext';
 import AppLogo from './AppLogo';
 import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet'; // Added SheetClose
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet';
 import { ChevronDown, LogOut, UserCircle, Settings, Repeat, Home, Building } from 'lucide-react';
 import UserTypeBadge from './UserTypeBadge';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
+import { useState } from 'react';
 
 export default function Header() {
   const { appContext, logout, switchReservation } = useAppContext();
@@ -17,40 +18,41 @@ export default function Header() {
   const t = useScopedI18n('header');
   const commonT = useScopedI18n('common');
   const currentLocale = useCurrentLocale();
-  const [isUserSheetOpen, setIsUserSheetOpen] = useState(false); // State for user sheet
-  const [isServiceSheetOpen, setIsServiceSheetOpen] = useState(false); // State for service sheet
+  const [isUserSheetOpen, setIsUserSheetOpen] = useState(false); 
+  const [isServiceSheetOpen, setIsServiceSheetOpen] = useState(false); 
 
   const handleNavigate = (path: string) => {
-    setIsUserSheetOpen(false); // Close sheet before navigating
-    router.push(path);
+    setIsUserSheetOpen(false); 
+    router.push(`/${currentLocale}${path}`); // Prepend locale
   };
 
   const handleLogout = () => {
     setIsUserSheetOpen(false);
-    logout();
+    logout(); // AppContext logout will handle locale-prefixed redirect
   };
   
   const handleSwitchAndClose = (reservationId: string) => {
-    switchReservation(reservationId);
-    setIsServiceSheetOpen(false); // Close sheet after switching
+    switchReservation(reservationId); // AppContext switchReservation will handle locale-prefixed redirect
+    setIsServiceSheetOpen(false); 
   };
 
   if (appContext.status !== 'authenticated' && appContext.status !== 'guest') {
     return (
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
         <div className="container flex h-16 items-center justify-between px-4">
-          <Link href="/" legacyBehavior><a className="flex items-center space-x-2"><AppLogo className="h-7 w-auto" /></a></Link>
+          {/* Link to locale-prefixed root or splash page */}
+          <Link href={`/${currentLocale}`} legacyBehavior><a className="flex items-center space-x-2"><AppLogo className="h-7 w-auto" /></a></Link>
         </div>
       </header>
     );
   }
 
   const { activeReservation } = appContext;
-  const userName = appContext.status === 'authenticated' ? appContext.user.name : t('guestUser'); // Translate 'Guest'
+  const userName = appContext.status === 'authenticated' ? appContext.user.name : t('guestUser');
   const userEmail = appContext.status === 'authenticated' ? appContext.user.email : activeReservation?.reservationNumber || '';
 
   const getInitials = (name: string) => {
-    return name?.split(' ')?.map(n => n[0])?.join('')?.toUpperCase() || '?'; // Handle potential undefined name
+    return name?.split(' ')?.map(n => n[0])?.join('')?.toUpperCase() || '?';
   }
 
   const canSwitch = appContext.status === 'authenticated' && appContext.user.activeReservations.length > 1;
@@ -67,14 +69,13 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-card shadow-sm">
       <div className="container flex h-20 items-center justify-between px-4 sm:px-6">
-        <Link href="/dashboard" legacyBehavior>
+        <Link href={`/${currentLocale}/dashboard`} legacyBehavior>
           <a className="flex items-center">
             <AppLogo className="h-8 w-auto" />
           </a>
         </Link>
 
         <div className="flex items-center space-x-3 sm:space-x-4">
-          {/* Service Context Switcher */}
           {activeReservation && (
              <Sheet open={isServiceSheetOpen} onOpenChange={setIsServiceSheetOpen}>
               <SheetTrigger asChild>
@@ -103,7 +104,7 @@ export default function Header() {
                         key={res.id}
                         variant={activeReservation.id === res.id ? "default" : "outline"}
                         className="w-full justify-start text-left h-auto py-2"
-                        onClick={() => handleSwitchAndClose(res.id)} // Use handler to close sheet
+                        onClick={() => handleSwitchAndClose(res.id)}
                       >
                         <div className="flex flex-col">
                            <div className="flex items-center">
@@ -120,13 +121,10 @@ export default function Header() {
                       </Button>
                     ))}
                   </div>
-                   {/* Add a close button if needed, though clicking an item closes it */}
-                   {/* <SheetClose asChild><Button variant="outline" className="mt-4">Cancel</Button></SheetClose> */}
                 </SheetContent>
               )}
             </Sheet>
           )}
-          {/* User Profile/Menu */}
           <Sheet open={isUserSheetOpen} onOpenChange={setIsUserSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
@@ -150,7 +148,6 @@ export default function Header() {
                 </div>
               </SheetHeader>
               <nav className="flex flex-col space-y-1">
-                 {/* Wrap navigation items in SheetClose if you want them to close the sheet */}
                  <Button variant="ghost" className="justify-start text-base" onClick={() => handleNavigate('/dashboard')}>
                      <Home className="mr-2 h-5 w-5" /> {t('dashboard')}
                  </Button>
@@ -162,9 +159,6 @@ export default function Header() {
                  </Button>
 
                 {canSwitch && (
-                   // This trigger re-opens the *service switcher* sheet, not closes the current one.
-                   // Consider a different UX or just rely on the main header trigger.
-                   // For now, let's make it close the user sheet and the user can tap the service switcher if needed.
                    <SheetClose asChild>
                     <Button variant="ghost" className="justify-start text-base" onClick={() => setIsServiceSheetOpen(true)}>
                         <Repeat className="mr-2 h-5 w-5" /> {t('switchServiceContext')}
@@ -182,6 +176,3 @@ export default function Header() {
     </header>
   );
 }
-
-// Add useState import
-import { useState } from 'react';
