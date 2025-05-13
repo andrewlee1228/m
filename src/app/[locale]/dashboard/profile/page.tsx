@@ -1,4 +1,4 @@
-tsx
+
 "use client";
 
 import { useAppContext } from '@/context/AppContext';
@@ -192,3 +192,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+
