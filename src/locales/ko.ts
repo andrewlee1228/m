@@ -437,7 +437,7 @@ export default {
     }
   },
   daySelect: {
-    daysUnit: "{count}일",
+    daysUnit: "{count, plural, =1{#일} other{#일}}",
     oneWeek: "{count}일 (1주)",
     twoWeeks: "{count}일 (2주)",
     threeWeeks: "{count}일 (3주)",
