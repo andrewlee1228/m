@@ -56,10 +56,10 @@ export default function RegisterPage() {
 
   // Mock branches data
   const branches = [
-    { id: 'branch1', name: 'Downtown Central' },
-    { id: 'branch2', name: 'Riverside Complex' },
-    { id: 'branch3', name: 'City Center Hotel' },
-    { id: 'branch4', name: 'Executive Suites' },
+    { id: 'branch1', name: '숭인' },
+    { id: 'branch2', name: '신설' },
+    { id: 'branch3', name: '동대문' },
+    { id: 'branch4', name: '신촌' },
   ];
 
   return (
