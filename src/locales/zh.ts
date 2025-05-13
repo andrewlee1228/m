@@ -17,7 +17,7 @@ export default {
     allRequests: '所有请求',
     viewEvents: '查看活动',
     viewPayments: '查看付款',
-    appLogoAriaLabel: 'Mangrove 标志',
+    appLogoAriaLabel: 'M 标志',
     serviceType: '服务类型：',
     userTypeLive: '住户',
     userTypeStay: '住宿客人',
@@ -89,8 +89,8 @@ export default {
     noActiveServiceSelected: '未选择活动服务',
     selectActiveServicePrompt: '请从您可用的预订中选择一个活动服务进行管理。',
     selectAService: '选择服务',
-    welcomeToAxxel: '欢迎来到 Axxel！',
-    welcomeToAxxelName: '{name}，欢迎来到 Axxel！', 
+    welcomeToAxxel: '欢迎来到 M！',
+    welcomeToAxxelName: '{name}，欢迎来到 M！', 
     noActiveReservations: '您目前似乎没有任何有效的预订。',
     exploreProperties: '浏览房产',
     makeAReservation: '进行预订',
@@ -399,7 +399,7 @@ export default {
   },
   aiConciergePage: {
     durationDays: "{count} 天",
-    pageTitle: "Axxel AI 礼宾服务",
+    pageTitle: "M AI 礼宾服务",
     pageSubtitle: "获取您在 {location} 住宿的个性化推荐。",
     currentLocationFallback: "您当前的位置",
     notAvailable: {
@@ -446,3 +446,4 @@ export default {
     selectPlaceholder: "选择时长",
   }
 } as const;
+

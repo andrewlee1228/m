@@ -17,7 +17,7 @@ export default {
     allRequests: 'All Requests',
     viewEvents: 'View Events',
     viewPayments: 'View Payments',
-    appLogoAriaLabel: 'Mangrove Logo',
+    appLogoAriaLabel: 'M Logo',
     serviceType: 'Service Type:',
     userTypeLive: 'Live Resident',
     userTypeStay: 'Stay Guest',
@@ -89,8 +89,8 @@ export default {
     noActiveServiceSelected: 'No Active Service Selected',
     selectActiveServicePrompt: 'Please select an active service to manage from your available reservations.',
     selectAService: 'Select a Service',
-    welcomeToAxxel: 'Welcome to Axxel!',
-    welcomeToAxxelName: 'Welcome to Axxel, {name}!',
+    welcomeToAxxel: 'Welcome to M!',
+    welcomeToAxxelName: 'Welcome to M, {name}!',
     noActiveReservations: "It looks like you don't have any active reservations with us at the moment.",
     exploreProperties: 'Explore Properties',
     makeAReservation: 'Make a Reservation',
@@ -399,7 +399,7 @@ export default {
   },
   aiConciergePage: {
     durationDays: "{count, plural, =1 {# day} other {# days}}",
-    pageTitle: "Axxel AI Concierge",
+    pageTitle: "M AI Concierge",
     pageSubtitle: "Get personalized recommendations for your stay at {location}.",
     currentLocationFallback: "your current location",
     notAvailable: {
@@ -446,3 +446,4 @@ export default {
     selectPlaceholder: "Select duration",
   }
 } as const;
+

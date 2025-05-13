@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, type FormEvent } from 'react';
@@ -67,8 +68,8 @@ export default function RegisterPage() {
       <Card className="w-full max-w-lg shadow-xl">
         <CardHeader className="text-center">
           <AppLogo className="w-32 h-auto mx-auto mb-4" />
-          <CardTitle className="text-2xl font-bold">Create Your Axxel Account</CardTitle>
-          <CardDescription>Join Axxel to manage your Live residency.</CardDescription>
+          <CardTitle className="text-2xl font-bold">Create Your M Account</CardTitle>
+          <CardDescription>Join M to manage your Live residency.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -162,3 +163,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+

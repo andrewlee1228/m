@@ -12,8 +12,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Mangrove Living',
-  description: 'Your integrated living and stay management app.',
+  title: 'M',
+  description: 'M - Your integrated living and stay management app.',
 };
 
 export default async function RootLayout({ // Make it async
@@ -33,3 +33,4 @@ export default async function RootLayout({ // Make it async
     </html>
   );
 }
+

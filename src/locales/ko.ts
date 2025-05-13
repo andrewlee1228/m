@@ -17,7 +17,7 @@ export default {
     allRequests: '모든 요청',
     viewEvents: '이벤트 보기',
     viewPayments: '결제 내역 보기',
-    appLogoAriaLabel: 'Mangrove 로고',
+    appLogoAriaLabel: 'M 로고',
     serviceType: '서비스 유형:',
     userTypeLive: '거주자',
     userTypeStay: '숙박 게스트',
@@ -89,8 +89,8 @@ export default {
     noActiveServiceSelected: '선택된 활성 서비스 없음',
     selectActiveServicePrompt: '사용 가능한 예약 중에서 관리할 활성 서비스를 선택해주세요.',
     selectAService: '서비스 선택',
-    welcomeToAxxel: 'Axxel에 오신 것을 환영합니다!',
-    welcomeToAxxelName: '{name}님, Axxel에 오신 것을 환영합니다!', 
+    welcomeToAxxel: 'M에 오신 것을 환영합니다!',
+    welcomeToAxxelName: '{name}님, M에 오신 것을 환영합니다!', 
     noActiveReservations: '현재 이용 중인 예약이 없는 것 같습니다.',
     exploreProperties: '시설 둘러보기',
     makeAReservation: '예약하기',
@@ -399,7 +399,7 @@ export default {
   },
   aiConciergePage: {
     durationDays: "{count}일",
-    pageTitle: "Axxel AI 컨시어지",
+    pageTitle: "M AI 컨시어지",
     pageSubtitle: "{location}에서의 숙박을 위한 맞춤 추천을 받아보세요.",
     currentLocationFallback: "현재 위치",
     notAvailable: {
@@ -446,3 +446,4 @@ export default {
     selectPlaceholder: "기간 선택",
   }
 } as const;
+

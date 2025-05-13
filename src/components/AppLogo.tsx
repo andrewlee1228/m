@@ -7,7 +7,7 @@ interface AppLogoProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const AppLogo = ({ textColor = "hsl(var(--primary))", className, ...rest }: AppLogoProps) => {
-  let ariaLabel = "Mangrove Logo"; // Default
+  let ariaLabel = "M Logo"; // Default
   try {
     // This hook will only work if AppLogo is rendered within an I18nProviderClient context.
     // If AppLogo can be rendered outside, consider passing the label as a prop or a different i18n strategy.
@@ -25,9 +25,10 @@ const AppLogo = ({ textColor = "hsl(var(--primary))", className, ...rest }: AppL
       style={{ color: textColor }}
       {...rest}
     >
-      Mangrove
+      M
     </div>
   );
 };
 
 export default AppLogo;
+

@@ -60,7 +60,7 @@ export default function SplashPage() {
           <AppLogo className="w-48 h-auto mx-auto" />
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
           {/* This text might not be translated if i18n is not ready, keep it simple or remove */}
-          <p className="text-muted-foreground">Loading Axxel...</p>
+          <p className="text-muted-foreground">Loading M...</p>
         </div>
       </div>
     );
@@ -78,3 +78,4 @@ export default function SplashPage() {
     </div>
   );
 }
+

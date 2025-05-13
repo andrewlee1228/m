@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, type FormEvent } from 'react';
@@ -77,7 +78,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <AppLogo className="w-32 h-auto mx-auto mb-4" />
-          <CardTitle className="text-2xl font-bold">Welcome to Axxel</CardTitle>
+          <CardTitle className="text-2xl font-bold">Welcome to M</CardTitle>
           <CardDescription>Sign in to manage your living and stay experiences.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -192,7 +193,7 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex flex-col items-center space-y-2">
           <p className="text-sm text-muted-foreground">
-            New to Axxel Live?{' '}
+            New to M?{' '}
             <Link href={`/${currentLocale}/register`} legacyBehavior>
               <a className="font-medium text-primary hover:underline">Create an account</a>
             </Link>
@@ -202,3 +203,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
