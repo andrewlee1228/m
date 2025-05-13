@@ -8,20 +8,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { AlertTriangle } from 'lucide-react';
+import { useScopedI18n } from '@/lib/i18n/client';
+
 
 export default function DashboardHomePage() {
   const { appContext } = useAppContext();
+  const t = useScopedI18n('dashboardPage');
+  const commonT = useScopedI18n('common');
+
 
   if (appContext.status === 'loading') {
-    return <div className="text-center py-10">Loading dashboard...</div>;
+    return <div className="text-center py-10">{t('loadingDashboard')}</div>;
   }
 
   if (appContext.status === 'unauthenticated') {
-    // This should ideally be handled by layout, but as a fallback:
     return (
       <div className="text-center py-10">
-        <p>Please log in to view your dashboard.</p>
-        <Button asChild className="mt-4"><Link href="/login">Go to Login</Link></Button>
+        <p>{t('pleaseLogIn')}</p>
+        <Button asChild className="mt-4"><Link href="/login">{t('goToLogin')}</Link></Button>
       </div>
     );
   }
@@ -29,22 +33,20 @@ export default function DashboardHomePage() {
   const { activeReservation } = appContext;
 
   if (!activeReservation) {
-    // This case handles users who are authenticated but have NO active reservations,
-    // or if they cleared their selection (though UI should prevent this).
      if (appContext.status === 'authenticated' && appContext.user.activeReservations.length > 0) {
         return (
              <Card className="max-w-lg mx-auto my-10 text-center">
                 <CardHeader>
                     <CardTitle className="flex items-center justify-center text-xl">
-                        <AlertTriangle className="h-6 w-6 mr-2 text-destructive" /> No Active Service Selected
+                        <AlertTriangle className="h-6 w-6 mr-2 text-destructive" /> {t('noActiveServiceSelected')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground mb-4">
-                        Please select an active service to manage from your available reservations.
+                        {t('selectActiveServicePrompt')}
                     </p>
                     <Button asChild>
-                        <Link href="/select-reservation">Select a Service</Link>
+                        <Link href="/select-reservation">{t('selectAService')}</Link>
                     </Button>
                 </CardContent>
             </Card>
@@ -53,18 +55,18 @@ export default function DashboardHomePage() {
     return (
        <Card className="max-w-lg mx-auto my-10 text-center">
         <CardHeader>
-            <CardTitle className="text-xl">Welcome to Axxel!</CardTitle>
+            <CardTitle className="text-xl">{t('welcomeToAxxel')}</CardTitle>
         </CardHeader>
         <CardContent>
             <p className="text-muted-foreground mb-4">
-                It looks like you don't have any active reservations with us at the moment.
+                {t('noActiveReservations')}
             </p>
             <div className="space-x-4">
                 <Button asChild variant="outline">
-                    <Link href="/explore-properties">Explore Properties</Link>
+                    <Link href="/explore-properties">{t('exploreProperties')}</Link>
                 </Button>
                 <Button asChild>
-                    <Link href="/new-booking">Make a Reservation</Link>
+                    <Link href="/new-booking">{t('makeAReservation')}</Link>
                 </Button>
             </div>
         </CardContent>
@@ -82,6 +84,6 @@ export default function DashboardHomePage() {
     case 'LongStay':
       return <LongStayHome user={userDetails} reservation={activeReservation} />;
     default:
-      return <div className="text-center py-10">Unknown reservation type. Please contact support.</div>;
+      return <div className="text-center py-10">{t('unknownReservationType')}</div>;
   }
 }

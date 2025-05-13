@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -8,18 +9,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Bell, Globe, Moon, Sun, HelpCircle, ChevronRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
+import { useScopedI18n, useChangeLocale, useCurrentLocale } from '@/lib/i18n/client';
+import type { Locale } from '@/lib/i18n/config';
 
 export default function SettingsPage() {
-  // Mock state for settings
-  const [notifications, setNotifications] = useState({
+  const t = useScopedI18n('settingsPage');
+  const commonT = useScopedI18n('common');
+  const changeLocale = useChangeLocale();
+  const currentLocale = useCurrentLocale();
+
+  // Mock state for settings - in a real app, these would interact with user preferences context or backend
+  const [notifications, setNotifications] = React.useState({
     push: true,
     email: false,
     sms: false,
   });
-  const [language, setLanguage] = useState('en');
-  const [theme, setTheme] = useState('system'); // 'light', 'dark', 'system'
+  // Theme state is not fully implemented here, just for UI demo
+  const [theme, setTheme] = React.useState('system'); 
 
-  // In a real app, these would interact with user preferences context or backend
   const handleNotificationChange = (type: keyof typeof notifications, value: boolean) => {
     setNotifications(prev => ({ ...prev, [type]: value }));
   };
@@ -27,20 +34,20 @@ export default function SettingsPage() {
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       <CardHeader className="px-0 pt-0">
-        <CardTitle className="text-3xl">Settings</CardTitle>
-        <CardDescription>Manage your application preferences and account settings.</CardDescription>
+        <CardTitle className="text-3xl">{t('title')}</CardTitle>
+        <CardDescription>{t('description')}</CardDescription>
       </CardHeader>
 
       {/* Notification Settings */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center"><Bell className="mr-2 h-5 w-5 text-primary" /> Notification Settings</CardTitle>
+          <CardTitle className="flex items-center"><Bell className="mr-2 h-5 w-5 text-primary" /> {t('notifications.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-3 border rounded-md">
             <div>
-              <Label htmlFor="pushNotifications" className="font-medium">Push Notifications</Label>
-              <p className="text-xs text-muted-foreground">Receive real-time updates on your device.</p>
+              <Label htmlFor="pushNotifications" className="font-medium">{t('notifications.push')}</Label>
+              <p className="text-xs text-muted-foreground">{t('notifications.pushDescription')}</p>
             </div>
             <Switch
               id="pushNotifications"
@@ -50,8 +57,8 @@ export default function SettingsPage() {
           </div>
           <div className="flex items-center justify-between p-3 border rounded-md">
             <div>
-              <Label htmlFor="emailNotifications" className="font-medium">Email Notifications</Label>
-              <p className="text-xs text-muted-foreground">Get important updates via email.</p>
+              <Label htmlFor="emailNotifications" className="font-medium">{t('notifications.email')}</Label>
+              <p className="text-xs text-muted-foreground">{t('notifications.emailDescription')}</p>
             </div>
             <Switch
               id="emailNotifications"
@@ -61,8 +68,8 @@ export default function SettingsPage() {
           </div>
           <div className="flex items-center justify-between p-3 border rounded-md">
             <div>
-              <Label htmlFor="smsNotifications" className="font-medium">SMS Notifications</Label>
-              <p className="text-xs text-muted-foreground">Critical alerts via text message.</p>
+              <Label htmlFor="smsNotifications" className="font-medium">{t('notifications.sms')}</Label>
+              <p className="text-xs text-muted-foreground">{t('notifications.smsDescription')}</p>
             </div>
             <Switch
               id="smsNotifications"
@@ -78,35 +85,34 @@ export default function SettingsPage() {
       {/* Language and Theme Settings */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center"><Globe className="mr-2 h-5 w-5 text-primary" /> Display Preferences</CardTitle>
+          <CardTitle className="flex items-center"><Globe className="mr-2 h-5 w-5 text-primary" /> {t('display.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
-            <Label htmlFor="language" className="font-medium block mb-1.5">Language</Label>
-            <Select value={language} onValueChange={setLanguage}>
+            <Label htmlFor="language" className="font-medium block mb-1.5">{t('display.language')}</Label>
+            <Select value={currentLocale} onValueChange={(value) => changeLocale(value as Locale)}>
               <SelectTrigger id="language" className="w-full sm:w-[200px]">
-                <SelectValue placeholder="Select language" />
+                <SelectValue placeholder={t('display.languageSelectPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="ko">한국어 (Korean)</SelectItem>
-                <SelectItem value="zh">中文 (Chinese)</SelectItem>
+                <SelectItem value="en">{t('languages.en')}</SelectItem>
+                <SelectItem value="ko">{t('languages.ko')}</SelectItem>
+                <SelectItem value="zh">{t('languages.zh')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label htmlFor="theme" className="font-medium block mb-1.5">Theme</Label>
+            <Label htmlFor="theme" className="font-medium block mb-1.5">{t('display.theme')}</Label>
             <Select value={theme} onValueChange={setTheme}>
               <SelectTrigger id="theme" className="w-full sm:w-[200px]">
-                <SelectValue placeholder="Select theme" />
+                <SelectValue placeholder={t('display.themeSelectPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="light"><Sun className="inline-block mr-2 h-4 w-4" />Light</SelectItem>
-                <SelectItem value="dark"><Moon className="inline-block mr-2 h-4 w-4" />Dark</SelectItem>
-                <SelectItem value="system">System Default</SelectItem>
+                <SelectItem value="light"><Sun className="inline-block mr-2 h-4 w-4" />{t('display.lightTheme')}</SelectItem>
+                <SelectItem value="dark"><Moon className="inline-block mr-2 h-4 w-4" />{t('display.darkTheme')}</SelectItem>
+                <SelectItem value="system">{t('display.systemTheme')}</SelectItem>
               </SelectContent>
             </Select>
-            {/* Implement theme switching using next-themes or similar */}
           </div>
         </CardContent>
       </Card>
@@ -116,24 +122,24 @@ export default function SettingsPage() {
       {/* Help & Support */}
        <Card>
         <CardHeader>
-          <CardTitle className="flex items-center"><HelpCircle className="mr-2 h-5 w-5 text-primary" /> Help & Support</CardTitle>
+          <CardTitle className="flex items-center"><HelpCircle className="mr-2 h-5 w-5 text-primary" /> {t('help.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
             <Button variant="ghost" className="w-full justify-between" asChild>
                 <Link href="/help/faq">
-                    <span>FAQ</span>
+                    <span>{t('help.faq')}</span>
                     <ChevronRight className="h-4 w-4" />
                 </Link>
             </Button>
              <Button variant="ghost" className="w-full justify-between" asChild>
                 <Link href="/help/tutorials">
-                    <span>Tutorials</span>
+                    <span>{t('help.tutorials')}</span>
                     <ChevronRight className="h-4 w-4" />
                 </Link>
             </Button>
              <Button variant="ghost" className="w-full justify-between" asChild>
                 <Link href="/help/contact-support">
-                    <span>Contact Support</span>
+                    <span>{t('help.contactSupport')}</span>
                     <ChevronRight className="h-4 w-4" />
                 </Link>
             </Button>
@@ -143,11 +149,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-// Mock useState for client component compatibility
-// In a real app, this would be part of a larger state management or hook
-function useState<S>(initialState: S | (() => S)): [S, React.Dispatch<React.SetStateAction<S>>] {
-    const [state, setState] = React.useState(initialState);
-    return [state, setState];
-}
-import * as React from 'react'; // Required for useState usage like this

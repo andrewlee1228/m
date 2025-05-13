@@ -9,13 +9,17 @@ import { ChevronDown, LogOut, UserCircle, Settings, Repeat, Home, Building } fro
 import UserTypeBadge from './UserTypeBadge';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
 
 export default function Header() {
   const { appContext, logout, switchReservation } = useAppContext();
   const router = useRouter();
+  const t = useScopedI18n('header');
+  const commonT = useScopedI18n('common');
+  const currentLocale = useCurrentLocale();
 
   if (appContext.status !== 'authenticated' && appContext.status !== 'guest') {
-    return ( // Basic header for unauthenticated or loading states
+    return ( 
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
         <div className="container flex h-16 items-center justify-between px-4">
           <Link href="/" legacyBehavior><a className="flex items-center space-x-2"><AppLogo className="h-7 w-auto" /></a></Link>
@@ -27,8 +31,7 @@ export default function Header() {
   const { activeReservation } = appContext;
   const userName = appContext.status === 'authenticated' ? appContext.user.name : "Guest";
   const userEmail = appContext.status === 'authenticated' ? appContext.user.email : activeReservation?.reservationNumber;
-  const userReservations = appContext.status === 'authenticated' ? appContext.user.activeReservations : (activeReservation ? [activeReservation] : []);
-
+  
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
   }
@@ -37,10 +40,12 @@ export default function Header() {
     if (appContext.status === 'authenticated') {
       switchReservation(reservationId);
     }
-    // Close sheet if open (logic would be needed if sheet state is managed here or passed)
   };
   
   const canSwitch = appContext.status === 'authenticated' && appContext.user.activeReservations.length > 1;
+
+  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString(currentLocale);
+
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-card shadow-sm">
@@ -69,9 +74,9 @@ export default function Header() {
               {canSwitch && appContext.status === 'authenticated' && (
                 <SheetContent side="top" className="w-full rounded-b-lg">
                   <SheetHeader>
-                    <SheetTitle>Switch Service Context</SheetTitle>
+                    <SheetTitle>{t('switchServiceContext')}</SheetTitle>
                     <SheetDescription>
-                      Select another active service to manage.
+                      {t('switchServiceDescription')}
                     </SheetDescription>
                   </SheetHeader>
                   <div className="grid gap-3 py-4">
@@ -90,7 +95,7 @@ export default function Header() {
                           <div className="text-xs">
                             <UserTypeBadge type={res.type} />
                             <span className="ml-2 text-muted-foreground">
-                              {new Date(res.startDate).toLocaleDateString()} - {new Date(res.endDate).toLocaleDateString()}
+                              {formatDate(res.startDate)} - {formatDate(res.endDate)}
                             </span>
                           </div>
                         </div>
@@ -126,23 +131,23 @@ export default function Header() {
               </SheetHeader>
               <nav className="flex flex-col space-y-2">
                 <Button variant="ghost" className="justify-start text-base" onClick={() => router.push('/dashboard')}>
-                  <Home className="mr-2 h-5 w-5" /> Dashboard
+                  <Home className="mr-2 h-5 w-5" /> {t('dashboard')}
                 </Button>
                 <Button variant="ghost" className="justify-start text-base" onClick={() => router.push('/dashboard/profile')}>
-                  <UserCircle className="mr-2 h-5 w-5" /> Profile
+                  <UserCircle className="mr-2 h-5 w-5" /> {commonT('profile')}
                 </Button>
                 <Button variant="ghost" className="justify-start text-base" onClick={() => router.push('/dashboard/settings')}>
-                  <Settings className="mr-2 h-5 w-5" /> Settings
+                  <Settings className="mr-2 h-5 w-5" /> {commonT('settings')}
                 </Button>
                 {canSwitch && (
                    <SheetTrigger asChild>
                     <Button variant="ghost" className="justify-start text-base">
-                        <Repeat className="mr-2 h-5 w-5" /> Switch Service
+                        <Repeat className="mr-2 h-5 w-5" /> {t('switchServiceContext')}
                     </Button>
                    </SheetTrigger>
                 )}
                 <Button variant="ghost" className="justify-start text-base text-destructive hover:text-destructive hover:bg-destructive/10" onClick={logout}>
-                  <LogOut className="mr-2 h-5 w-5" /> Logout
+                  <LogOut className="mr-2 h-5 w-5" /> {commonT('logout')}
                 </Button>
               </nav>
             </SheetContent>

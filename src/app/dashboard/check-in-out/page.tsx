@@ -9,13 +9,17 @@ import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
-import Link from 'next/link'; // Import Link component
+import Link from 'next/link';
+import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
 
 export default function CheckInOutPage() {
   const { appContext } = useAppContext();
   const { toast } = useToast();
+  const t = useScopedI18n('checkInOutPage');
+  const currentLocale = useCurrentLocale();
+
   const [feedback, setFeedback] = useState('');
-  const [rating, setRating] = useState<number | null>(null); // e.g. 1-5 or smiley based
+  const [rating, setRating] = useState<number | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   if (appContext.status !== 'guest' && (appContext.status !== 'authenticated' || appContext.activeReservation?.type !== 'Stay')) {
@@ -23,8 +27,8 @@ export default function CheckInOutPage() {
        <div className="flex items-center justify-center h-full">
         <Card className="max-w-md text-center p-8">
            <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <CardTitle>Feature Not Applicable</CardTitle>
-          <CardDescription className="mt-2">Check-in and Check-out processes are for Stay guests.</CardDescription>
+          <CardTitle>{t('featureNotApplicable')}</CardTitle>
+          <CardDescription className="mt-2">{t('checkInOutForStayGuests')}</CardDescription>
         </Card>
       </div>
     );
@@ -35,31 +39,27 @@ export default function CheckInOutPage() {
   const checkinDate = new Date(activeReservation.startDate);
   const checkoutDate = new Date(activeReservation.endDate);
 
-  // Add buffer for check-in (e.g., allow check-in starting from the beginning of the check-in day)
   const checkinStartOfDay = new Date(checkinDate);
   checkinStartOfDay.setHours(0, 0, 0, 0);
 
-  // Add buffer for check-out (e.g., allow check-out until the end of the check-out day)
   const checkoutEndOfDay = new Date(checkoutDate);
   checkoutEndOfDay.setHours(23, 59, 59, 999);
 
-  const canCheckIn = now >= checkinStartOfDay && now < checkoutEndOfDay; // More flexible check-in window
-  const canCheckOut = now >= checkinStartOfDay; // Can start checkout process after check-in day starts
+  const canCheckIn = now >= checkinStartOfDay && now < checkoutEndOfDay;
+  const canCheckOut = now >= checkinStartOfDay;
 
+  const formatDate = (date: Date) => date.toLocaleDateString(currentLocale);
+  const formatTime = (date: Date) => date.toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
 
   const handleCheckIn = () => {
-    toast({ title: "Check-In Initiated", description: "Follow QR code or link instructions." });
-    // Logic for QR scan or opening a link would go here
+    toast({ title: t('checkInInitiatedToast'), description: t('followQRInstructionsToast') });
   };
 
   const handleCheckout = async () => {
     setIsCheckingOut(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     setIsCheckingOut(false);
-    toast({ title: "Check-Out Successful", description: "Thank you for staying with us! Your feedback is appreciated." });
-    // Potentially redirect or update UI state
-    // Ideally, update appContext status or activeReservation to reflect checkout
+    toast({ title: t('checkoutSuccessfulToast'), description: t('thankYouFeedbackToast') });
   };
 
   const SmileyButton = ({ Icon, value, currentRating, onClick }: {Icon: React.ElementType, value: number, currentRating: number | null, onClick: (value: number) => void}) => (
@@ -68,10 +68,10 @@ export default function CheckInOutPage() {
         size="icon"
         className={`rounded-full h-12 w-12 transition-all ${
           currentRating === value
-            ? value <= 2
-              ? 'bg-destructive text-destructive-foreground scale-110'
-              : value === 3
-              ? 'bg-yellow-500 text-white scale-110'
+            ? value <= 2 
+              ? 'bg-destructive text-destructive-foreground scale-110' 
+              : value === 3 
+              ? 'bg-yellow-500 text-white scale-110' 
               : 'bg-green-500 text-white scale-110'
             : 'hover:bg-muted'
         }`}
@@ -95,50 +95,47 @@ export default function CheckInOutPage() {
             />
          </div>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Check-In / Check-Out</CardTitle>
-          <CardDescription>Manage your arrival and departure for {activeReservation.branchName}.</CardDescription>
+          <CardTitle className="text-2xl">{t('checkInOutTitle')}</CardTitle>
+          <CardDescription>{t('manageArrivalDeparture', { branchName: activeReservation.branchName })}</CardDescription>
         </CardHeader>
       </Card>
 
-      {/* Check-In Section */}
-      {canCheckIn && !canCheckOut && now < checkoutDate /* Simplified logic: Show check-in before checkout day starts */ && (
+      {canCheckIn && !canCheckOut && now < checkoutDate && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center"><LogIn className="mr-2 h-5 w-5 text-primary" /> Check-In</CardTitle>
-            <CardDescription>Your check-in time is from {checkinDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} on {checkinDate.toLocaleDateString()}.</CardDescription>
+            <CardTitle className="flex items-center"><LogIn className="mr-2 h-5 w-5 text-primary" /> {t('checkIn')}</CardTitle>
+            <CardDescription>{t('checkInTimeInfo', { time: formatTime(checkinDate), date: formatDate(checkinDate) })}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p>Ready to check in? You can use the QR code provided at the reception or a check-in link sent to your email/SMS.</p>
+            <p>{t('readyToScanQR')}</p>
             <div className="flex space-x-4">
-              <Button className="flex-1" onClick={handleCheckIn}><QrCode className="mr-2 h-4 w-4" /> Scan QR Code</Button>
-              <Button variant="outline" className="flex-1" onClick={handleCheckIn}><Link2 className="mr-2 h-4 w-4" /> Use Check-In Link</Button>
+              <Button className="flex-1" onClick={handleCheckIn}><QrCode className="mr-2 h-4 w-4" /> {t('scanQRCode')}</Button>
+              <Button variant="outline" className="flex-1" onClick={handleCheckIn}><Link2 className="mr-2 h-4 w-4" /> {t('useCheckInLink')}</Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Check-Out Section */}
-      {canCheckOut && now < checkoutEndOfDay /* Show checkout until end of checkout day */ && (
+      {canCheckOut && now < checkoutEndOfDay && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center"><LogOut className="mr-2 h-5 w-5 text-destructive" /> Check-Out</CardTitle>
-            <CardDescription>Standard check-out time is {new Date(checkoutDate.setHours(11,0,0,0)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} on {checkoutDate.toLocaleDateString()}.</CardDescription>
+            <CardTitle className="flex items-center"><LogOut className="mr-2 h-5 w-5 text-destructive" /> {t('checkOut')}</CardTitle>
+            <CardDescription>{t('standardCheckoutTimeInfo', { time: formatTime(new Date(checkoutDate.setHours(11,0,0,0))), date: formatDate(checkoutDate) })}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="feedback" className="font-medium">Share Your Feedback (Optional)</Label>
-              <p className="text-xs text-muted-foreground mb-2">How was your stay?</p>
+              <Label htmlFor="feedback" className="font-medium">{t('shareYourFeedback')}</Label>
+              <p className="text-xs text-muted-foreground mb-2">{t('howWasYourStay')}</p>
               <div className="flex justify-around mb-3">
-                 {/* Using values 1-5 for rating */}
                 <SmileyButton Icon={Frown} value={1} currentRating={rating} onClick={setRating} />
-                <SmileyButton Icon={Meh} value={2} currentRating={rating} onClick={setRating} /> {/* Meh for 2 */}
+                <SmileyButton Icon={Meh} value={2} currentRating={rating} onClick={setRating} />
                 <SmileyButton Icon={Meh} value={3} currentRating={rating} onClick={setRating} />
                 <SmileyButton Icon={Smile} value={4} currentRating={rating} onClick={setRating} />
-                <SmileyButton Icon={Smile} value={5} currentRating={rating} onClick={setRating} /> {/* Smile for 5 */}
+                <SmileyButton Icon={Smile} value={5} currentRating={rating} onClick={setRating} />
               </div>
               <Textarea
                 id="feedback"
-                placeholder="Tell us about your experience..."
+                placeholder={t('tellUsExperience')}
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 rows={4}
@@ -148,30 +145,30 @@ export default function CheckInOutPage() {
           </CardContent>
           <CardFooter>
             <Button onClick={handleCheckout} className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground" disabled={isCheckingOut}>
-              {isCheckingOut ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing Check-Out...</> : "Complete Check-Out"}
+              {isCheckingOut ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('processingCheckout')}</> : t('completeCheckout')}
             </Button>
           </CardFooter>
         </Card>
       )}
-       {!canCheckIn && now < checkinStartOfDay && ( // Before the check-in day
+       {!canCheckIn && now < checkinStartOfDay && (
          <Card>
             <CardHeader>
-                <CardTitle>Your Stay is Upcoming</CardTitle>
+                <CardTitle>{t('yourStayIsUpcoming')}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p>Check-in begins on {checkinDate.toLocaleDateString()} at {checkinDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.</p>
-                <p className="mt-2 text-sm text-muted-foreground">We look forward to welcoming you!</p>
+                <p>{t('checkInBeginsOn', { date: formatDate(checkinDate), time: formatTime(checkinDate) })}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{t('lookForwardToWelcoming')}</p>
             </CardContent>
          </Card>
        )}
-       {now > checkoutEndOfDay && ( // After the end of the check-out day
+       {now > checkoutEndOfDay && ( 
          <Card>
             <CardHeader>
-                <CardTitle>Your Stay Has Ended</CardTitle>
+                <CardTitle>{t('yourStayHasEnded')}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p>Thank you for staying at {activeReservation.branchName}. We hope you had a pleasant time.</p>
-                <Button variant="link" asChild className="mt-2 px-0"><Link href="/new-booking">Book another stay?</Link></Button>
+                <p>{t('thankYouForStaying', { branchName: activeReservation.branchName })}</p>
+                <Button variant="link" asChild className="mt-2 px-0"><Link href="/new-booking">{t('bookAnotherStay')}</Link></Button>
             </CardContent>
          </Card>
        )}

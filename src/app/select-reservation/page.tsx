@@ -9,20 +9,22 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import AppLogo from '@/components/AppLogo';
 import UserTypeBadge from '@/components/UserTypeBadge';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react'; // Removed ArrowRight
 import type { Reservation } from '@/types';
+import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
 
 export default function SelectReservationPage() {
   const router = useRouter();
   const { appContext, selectReservation, logout } = useAppContext();
   const [selectedReservationId, setSelectedReservationId] = useState<string | undefined>(undefined);
+  const t = useScopedI18n('selectReservationPage');
+  const commonT = useScopedI18n('common');
+  const currentLocale = useCurrentLocale();
 
   useEffect(() => {
     if (appContext.status === 'unauthenticated' || appContext.status === 'guest') {
       router.push('/login');
     } else if (appContext.status === 'authenticated' && appContext.user.activeReservations.length <= 1) {
-      // If only one or no reservations, this page isn't needed, redirect to dashboard or login
-      // This might happen if user lands here directly. selectReservation in context handles the primary navigation.
       router.push('/dashboard');
     }
   }, [appContext, router]);
@@ -35,16 +37,15 @@ export default function SelectReservationPage() {
 
 
   if (appContext.status === 'loading' || appContext.status === 'unauthenticated' || appContext.status === 'guest') {
-    // Or a loading spinner
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-secondary p-4">
           <AppLogo className="w-32 h-auto mx-auto mb-8" />
           <Card className="w-full max-w-md">
             <CardHeader>
-                <CardTitle>Loading...</CardTitle>
+                <CardTitle>{t('loading')}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p>Please wait while we check your details.</p>
+                <p>{t('pleaseWait')}</p>
             </CardContent>
           </Card>
       </div>
@@ -59,15 +60,15 @@ export default function SelectReservationPage() {
     }
   };
   
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString(currentLocale, { year: 'numeric', month: 'short', day: 'numeric' });
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-secondary p-4 sm:p-6">
       <Card className="w-full max-w-lg shadow-xl">
         <CardHeader className="text-center">
           <AppLogo className="w-32 h-auto mx-auto mb-4" />
-          <CardTitle className="text-2xl font-bold">Select Your Active Service</CardTitle>
-          <CardDescription>You have multiple active services. Please choose which one you'd like to manage.</CardDescription>
+          <CardTitle className="text-2xl font-bold">{t('selectActiveService')}</CardTitle>
+          <CardDescription>{t('multipleActiveServicesPrompt')}</CardDescription>
         </CardHeader>
         <CardContent>
           {reservations.length > 0 ? (
@@ -90,23 +91,23 @@ export default function SelectReservationPage() {
                     <UserTypeBadge type={res.type} />
                   </div>
                   <div className="pl-8 pt-1 text-sm text-muted-foreground">
-                    <p>Service: {res.type}</p>
-                    <p>Period: {formatDate(res.startDate)} - {formatDate(res.endDate)}</p>
-                    {res.reservationNumber && <p>Reservation #: {res.reservationNumber}</p>}
+                    <p>{t('service')} {res.type}</p>
+                    <p>{t('period')} {formatDate(res.startDate)} - {formatDate(res.endDate)}</p>
+                    {res.reservationNumber && <p>{t('reservationNo')} {res.reservationNumber}</p>}
                   </div>
                 </Label>
               ))}
             </RadioGroup>
           ) : (
-            <p className="text-center text-muted-foreground">You have no active reservations.</p>
+            <p className="text-center text-muted-foreground">{t('noActiveReservations')}</p>
           )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-3">
           <Button onClick={handleSelectReservation} disabled={!selectedReservationId || reservations.length === 0} className="w-full bg-primary hover:bg-primary/90">
-            <CheckCircle className="mr-2 h-4 w-4" /> Continue to Selected Service
+            <CheckCircle className="mr-2 h-4 w-4" /> {t('continueToSelectedService')}
           </Button>
           <Button variant="link" onClick={logout} className="text-muted-foreground">
-            Log out
+            {commonT('logout')}
           </Button>
         </CardFooter>
       </Card>

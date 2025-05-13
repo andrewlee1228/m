@@ -1,6 +1,9 @@
+"use client";
+
 import type { UserType } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useScopedI18n } from '@/lib/i18n/client';
 
 interface UserTypeBadgeProps {
   type: UserType;
@@ -8,30 +11,28 @@ interface UserTypeBadgeProps {
 }
 
 export default function UserTypeBadge({ type, className }: UserTypeBadgeProps) {
+  const t = useScopedI18n('userTypeBadge');
   let variant: 'default' | 'secondary' | 'destructive' | 'outline' = 'default';
-  let badgeText = type;
+  let badgeTextKey: keyof typeof import('@/locales/en').default.userTypeBadge = type;
 
   switch (type) {
     case 'Live':
-      variant = 'default'; // Primary color (Deep Teal)
-      badgeText = 'Live Resident';
+      variant = 'default';
+      badgeTextKey = 'Live';
       break;
     case 'Stay':
-      variant = 'secondary'; // Accent color (Coral) or secondary
-      // If using shadcn default colors directly, might need custom class for Coral
-      // For now, 'secondary' will use theme's secondary.
-      // Custom style for coral: className="bg-accent text-accent-foreground"
-      badgeText = 'Stay Guest';
+      variant = 'secondary';
+      badgeTextKey = 'Stay';
       break;
     case 'LongStay':
-      variant = 'outline'; // A distinct outline style
-      badgeText = 'Long Stay';
+      variant = 'outline';
+      badgeTextKey = 'LongStay';
       break;
     default:
       variant = 'secondary';
   }
   
-  // Special styling for Stay to use Accent color
+  const badgeText = t(badgeTextKey);
   const typeSpecificClass = type === 'Stay' ? 'bg-accent text-accent-foreground hover:bg-accent/90' : '';
 
   return (

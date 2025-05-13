@@ -3,10 +3,11 @@
 import { useAppContext } from '@/context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DollarSign, CreditCard, CalendarDays, ListFilter, AlertTriangle } from 'lucide-react';
+import { DollarSign, CreditCard, ListFilter, AlertTriangle } from 'lucide-react'; // Removed CalendarDays
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { Payment } from '@/types';
 import { Badge } from '@/components/ui/badge';
+import { useCurrentLocale } from '@/lib/i18n/client'; // Import useCurrentLocale
 
 const mockPayments: Payment[] = [
   { id: 'pay1', amount: 1200.00, currency: 'USD', date: '2024-07-01', status: 'Paid', description: 'July Rent' },
@@ -17,6 +18,7 @@ const mockPayments: Payment[] = [
 
 export default function RentPaymentPage() {
   const { appContext } = useAppContext();
+  const currentLocale = useCurrentLocale(); // Get current locale
 
   if (appContext.status !== 'authenticated' || appContext.activeReservation?.type !== 'Live') {
     return (
@@ -35,7 +37,7 @@ export default function RentPaymentPage() {
 
   const getStatusBadgeVariant = (status: Payment['status']) => {
     switch (status) {
-      case 'Paid': return 'default'; // Will use primary color
+      case 'Paid': return 'default'; 
       case 'Pending': return 'secondary';
       case 'Failed': return 'destructive';
       default: return 'outline';
@@ -49,6 +51,9 @@ export default function RentPaymentPage() {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString(currentLocale);
+  };
 
   return (
     <div className="space-y-8">
@@ -65,7 +70,7 @@ export default function RentPaymentPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-3xl font-bold text-primary">{pendingPayment.currency} {pendingPayment.amount.toFixed(2)}</p>
-            <p className="text-sm text-muted-foreground">Due Date: {new Date(pendingPayment.date).toLocaleDateString()}</p>
+            <p className="text-sm text-muted-foreground">Due Date: {formatDate(pendingPayment.date)}</p>
           </CardContent>
           <CardFooter>
             <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90">
@@ -99,7 +104,7 @@ export default function RentPaymentPage() {
             <TableBody>
               {mockPayments.map((payment) => (
                 <TableRow key={payment.id}>
-                  <TableCell>{new Date(payment.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{formatDate(payment.date)}</TableCell>
                   <TableCell className="font-medium">{payment.description}</TableCell>
                   <TableCell className="text-right">{payment.currency} {payment.amount.toFixed(2)}</TableCell>
                   <TableCell className="text-center">
@@ -125,7 +130,6 @@ export default function RentPaymentPage() {
             <CardDescription>Add or update your preferred payment methods.</CardDescription>
         </CardHeader>
         <CardContent>
-            {/* Placeholder for payment methods list */}
             <p className="text-muted-foreground text-sm mb-3">You have 1 card on file ending in **** 1234.</p>
             <Button variant="outline">
                 <CreditCard className="mr-2 h-4 w-4" /> Add New Payment Method

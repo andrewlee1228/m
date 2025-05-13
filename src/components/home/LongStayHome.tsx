@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarClock, Building2, Users, PlusCircle, Wrench, Info } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
 
 interface LongStayHomeProps {
   user: { name: string };
@@ -19,7 +20,17 @@ const mockLongStayEvents: CommunityEvent[] = [
 ];
 
 export default function LongStayHome({ user, reservation }: LongStayHomeProps) {
+  const t = useScopedI18n('longStayHomePage');
+  const currentLocale = useCurrentLocale();
+
   const upcomingEvent = mockLongStayEvents.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+
+  const formatDate = (dateString: string, options?: Intl.DateTimeFormatOptions) => {
+    return new Date(dateString).toLocaleDateString(currentLocale, options);
+  };
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
+  };
   
   return (
     <div className="space-y-6">
@@ -33,79 +44,76 @@ export default function LongStayHome({ user, reservation }: LongStayHomeProps) {
                 data-ai-hint="modern apartment"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end">
-                <h1 className="text-3xl sm:text-4xl font-bold text-white">Welcome, {user.name.split(' ')[0]}!</h1>
-                <p className="text-lg text-primary-foreground/90">Your extended stay at {reservation.branchName}, {reservation.unit || 'Suite'}.</p>
+                <h1 className="text-3xl sm:text-4xl font-bold text-white">{t('welcome', { name: user.name.split(' ')[0] })}</h1>
+                <p className="text-lg text-primary-foreground/90">{t('yourExtendedStay', { branchName: reservation.branchName, unit: reservation.unit || 'Suite' })}</p>
             </div>
         </div>
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Stay Extension Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">Stay Duration</CardTitle>
+            <CardTitle className="text-base font-medium">{t('stayDuration')}</CardTitle>
             <CalendarClock className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">Ends: {new Date(reservation.endDate).toLocaleDateString()}</div>
+            <div className="text-xl font-bold">{t('endsOn', { date: formatDate(reservation.endDate) })}</div>
             <p className="text-xs text-muted-foreground">
-              Need more time? Check extension options.
+              {t('needMoreTime')}
             </p>
           </CardContent>
           <CardFooter>
             <Button asChild className="w-full" variant="outline">
-              <Link href="/dashboard/booking/extend"><PlusCircle className="mr-2 h-4 w-4" /> Extend Your Stay</Link>
+              <Link href="/dashboard/booking/extend"><PlusCircle className="mr-2 h-4 w-4" /> {t('extendYourStay')}</Link>
             </Button>
           </CardFooter>
         </Card>
 
-        {/* Facilities Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-medium">Amenity Access</CardTitle>
+            <CardTitle className="text-base font-medium">{t('amenityAccess')}</CardTitle>
             <Building2 className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">Book Facilities</div>
+            <div className="text-xl font-bold">{t('bookFacilities')}</div>
             <p className="text-xs text-muted-foreground">
-              Access gym, pool, meeting rooms, etc.
+              {t('accessAmenities')}
             </p>
           </CardContent>
           <CardFooter>
             <Button asChild className="w-full" variant="outline">
-              <Link href="/dashboard/facilities"><Info className="mr-2 h-4 w-4" /> View & Book Facilities</Link>
+              <Link href="/dashboard/facilities"><Info className="mr-2 h-4 w-4" /> {t('viewAndBookFacilities')}</Link>
             </Button>
           </CardFooter>
         </Card>
       </div>
 
-      {/* Community & Services Card */}
       <Card>
         <CardHeader>
-            <CardTitle>Community & Services</CardTitle>
+            <CardTitle>{t('communityAndServices')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
             <div>
-                <h3 className="font-semibold flex items-center"><Users className="mr-2 h-5 w-5 text-primary"/> Community Events</h3>
+                <h3 className="font-semibold flex items-center"><Users className="mr-2 h-5 w-5 text-primary"/> {t('communityEvents')}</h3>
                 {upcomingEvent ? (
                 <div className="mt-1 text-sm">
                     <p className="font-medium">{upcomingEvent.title}</p>
                     <p className="text-xs text-muted-foreground">
-                    {new Date(upcomingEvent.date).toLocaleDateString()} at {new Date(upcomingEvent.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {upcomingEvent.location}
+                    {t('eventDetails', { date: formatDate(upcomingEvent.date), time: formatTime(upcomingEvent.date), location: upcomingEvent.location })}
                     </p>
                     <Button variant="link" size="sm" className="p-0 h-auto mt-1" asChild>
-                        <Link href="/dashboard/community">View All Events</Link>
+                        <Link href="/dashboard/community">{t('viewAllEvents')}</Link>
                     </Button>
                 </div>
                 ) : (
-                <p className="text-sm text-muted-foreground">No upcoming community events.</p>
+                <p className="text-sm text-muted-foreground">{t('noUpcomingCommunityEvents')}</p>
                 )}
             </div>
             <div>
-                <h3 className="font-semibold flex items-center"><Wrench className="mr-2 h-5 w-5 text-primary"/> Long-Stay Services</h3>
-                <p className="text-sm text-muted-foreground mt-1">Request laundry, grocery delivery, or specialized cleaning.</p>
+                <h3 className="font-semibold flex items-center"><Wrench className="mr-2 h-5 w-5 text-primary"/> {t('longStayServices')}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{t('specializedServicesDescription')}</p>
                  <Button variant="link" size="sm" className="p-0 h-auto mt-1" asChild>
-                    <Link href="/dashboard/maintenance?type=longstay">Request Services</Link>
+                    <Link href="/dashboard/maintenance?type=longstay">{t('requestServices')}</Link>
                 </Button>
             </div>
         </CardContent>

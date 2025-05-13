@@ -1,7 +1,19 @@
 import type { SVGProps } from 'react';
+import { useScopedI18n } from '@/lib/i18n/client'; // Assuming AppLogo might be used in client components
 
 const AppLogo = (props: SVGProps<SVGSVGElement> & { textColor?: string }) => {
   const { textColor = "hsl(var(--primary))", ...rest } = props;
+  // This hook will only work if AppLogo is rendered within an I18nProviderClient context.
+  // If AppLogo can be rendered outside, consider passing the label as a prop or a different i18n strategy.
+  let ariaLabel = "Axxel Logo"; // Default
+  try {
+    const commonT = useScopedI18n('common');
+    ariaLabel = commonT('appLogoAriaLabel');
+  } catch (e) {
+    // Fallback if context is not available (e.g. rendered in a storybook or isolated environment)
+    // console.warn("AppLogo: i18n context not available, using default aria-label.");
+  }
+  
   return (
     <svg
       width="120"
@@ -9,7 +21,7 @@ const AppLogo = (props: SVGProps<SVGSVGElement> & { textColor?: string }) => {
       viewBox="0 0 120 36"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="Axxel Logo"
+      aria-label={ariaLabel}
       {...rest}
     >
       <path
