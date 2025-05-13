@@ -7,6 +7,7 @@ import { Users, CalendarDays, MapPin, PlusCircle, CheckSquare, XSquare, AlertTri
 import type { CommunityEvent } from '@/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from 'next/image';
+import { Badge } from '@/components/ui/badge'; // Added import
 
 const mockCommunityEvents: CommunityEvent[] = [
   { id: 'evt1', title: 'Summer BBQ Bash', description: 'Join us for a community BBQ by the pool! Food, music, and fun for all residents.', date: '2024-07-20T17:00:00Z', location: 'Pool Area, Downtown Central', branchName: 'Downtown Central', rsvp: true },
@@ -116,7 +117,7 @@ export default function CommunityEventsPage() {
       {/* <Card>
         <CardHeader>
             <CardTitle>Community Forum</CardTitle>
-            <CardDescription>Engage in discussions with other residents.</CardHeader>
+            <CardDescription>Engage in discussions with other residents.</CardDescription>
         </CardContent>
         <CardContent>
             <p className="text-muted-foreground">Forum features coming soon!</p>
