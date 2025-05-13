@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Wrench, Send, Paperclip, AlertTriangle, Home, Building } from 'lucide-react';
+import { Wrench, Send, Paperclip, AlertTriangle, Home, Building, Loader2 } from 'lucide-react'; // Added Loader2
 import { useToast } from '@/hooks/use-toast';
 
 const maintenanceCategories = [
