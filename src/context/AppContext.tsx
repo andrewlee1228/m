@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -5,6 +6,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import type { CurrentAppContext, AuthenticatedUser, Reservation, StayGuestData } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useCurrentLocale } from '@/lib/i18n/client'; // Import useCurrentLocale
+import { Loader2 } from 'lucide-react'; // Import Loader2
 
 // Mock data
 const MOCK_USER_LIVE: AuthenticatedUser = {
@@ -54,8 +56,21 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppWrapper = ({ children }: { children: ReactNode }) => {
   const [appContext, setAppContext] = useState<CurrentAppContext>({ status: 'loading' });
   const router = useRouter();
-  const currentLocale = useCurrentLocale(); // Get current locale
+  const currentLocale = useCurrentLocale(); 
 
+  // If currentLocale is undefined, AppContext isn't "ready" yet.
+  // Render a loader to prevent further execution of AppWrapper logic
+  // and child rendering until locale is defined.
+  if (typeof currentLocale === 'undefined') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Initializing application...</p>
+      </div>
+    );
+  }
+
+  // Proceed with AppContext logic now that currentLocale is confirmed to be defined.
   useEffect(() => {
     const storedContext = localStorage.getItem('appContext');
     let loadedState: CurrentAppContext = { status: 'unauthenticated' }; 
@@ -139,8 +154,6 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
       const newActiveReservation = appContext.user.activeReservations.find(r => r.id === reservationId);
       if (newActiveReservation && newActiveReservation.id !== appContext.activeReservation?.id) {
         updateAndStoreContext({ ...appContext, activeReservation: newActiveReservation });
-        // Optional: router.refresh() if page needs to reload data based on new reservation.
-        // Or navigate to dashboard explicitly if that's the desired behavior on switch
         router.push(`/${currentLocale}/dashboard`); 
       }
     }
