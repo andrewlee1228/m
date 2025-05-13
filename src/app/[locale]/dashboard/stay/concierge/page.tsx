@@ -7,20 +7,19 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Sparkles, MapPin, Utensils, ShoppingBag, AlertTriangle as AlertTriangleIcon } from 'lucide-react'; // Renamed AlertTriangle to avoid conflict
+import { Loader2, Sparkles, MapPin, Utensils, ShoppingBag, AlertTriangle as AlertTriangleIcon } from 'lucide-react'; 
 import { useToast } from '@/hooks/use-toast';
 import { aiConciergeForStayUsers, type AiConciergeInput, type AiConciergeOutput } from '@/ai/flows/ai-concierge';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from '@/components/ui/separator';
-import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client'; // Added useCurrentLocale
-import { useRouter } from 'next/navigation'; // Added useRouter
+import { useScopedI18n } from '@/lib/i18n/client';
+import { DaySelect } from '@/components/shared/DaySelect'; // Import the new component
 
 export default function AiConciergePage() {
   const { appContext } = useAppContext();
   const { toast } = useToast();
-  const t = useScopedI18n('aiConciergePage'); // Assuming scope for this page
-  const router = useRouter(); // For redirection
-  const currentLocale = useCurrentLocale(); // For locale-aware redirection
+  const t = useScopedI18n('aiConciergePage');
+  const tDaySelect = useScopedI18n('daySelect'); // For DaySelect specific translations if needed
 
   const [interests, setInterests] = useState('');
   const [location, setLocation] = useState('');
@@ -38,13 +37,22 @@ export default function AiConciergePage() {
         const endDate = new Date(res.endDate);
         const durationMs = endDate.getTime() - startDate.getTime();
         const durationDays = Math.ceil(durationMs / (1000 * 60 * 60 * 24));
-        setStayDuration(t('durationDays', { count: durationDays }));
+        // Use daySelect scope for consistency if it has the generic "daysUnit"
+        setStayDuration(tDaySelect('daysUnit', { count: durationDays }));
       }
     }
-  }, [appContext.status, appContext.activeReservation, t]);
+  }, [appContext.status, appContext.activeReservation, tDaySelect]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!interests || !location || !stayDuration) {
+        toast({
+            title: t('error.alertTitle'),
+            description: "Please fill in all fields: interests, location, and stay duration.", // TODO: Add to i18n
+            variant: "destructive",
+        });
+        return;
+    }
     setIsLoading(true);
     setError(null);
     setRecommendations(null);
@@ -129,18 +137,17 @@ export default function AiConciergePage() {
               </div>
               <div>
                 <Label htmlFor="stayDuration">{t('form.stayDurationLabel')}</Label>
-                <Input
+                <DaySelect
                   id="stayDuration"
                   value={stayDuration}
-                  onChange={(e) => setStayDuration(e.target.value)}
+                  onValueChange={setStayDuration}
                   placeholder={t('form.stayDurationPlaceholder')}
-                  required
                   disabled={isLoading}
                   className="mt-1"
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading || !interests || !location || !stayDuration}>
               {isLoading ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('form.generatingButton')}</>
               ) : (

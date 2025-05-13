@@ -431,4 +431,12 @@ export default {
         disclaimer: "AI 추천은 정보 제공 목적으로만 제공됩니다. 세부 정보는 직접 확인하시기 바랍니다.",
     }
   },
+  daySelect: {
+    daysUnit: "{count}일",
+    oneWeek: "{count}일 (1주)",
+    twoWeeks: "{count}일 (2주)",
+    threeWeeks: "{count}일 (3주)",
+    oneMonthApprox: "{count}일 (약 1개월)",
+    selectPlaceholder: "기간 선택",
+  }
 } as const;

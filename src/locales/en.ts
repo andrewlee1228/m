@@ -152,9 +152,9 @@ export default {
     requestAmenities: "Request Amenities",
     areaInfo: "Area Info",
     defaultRoomName: "your room",
-    countdownDaysHours: "{days}d {hours}h",
-    countdownHoursMinutes: "{hours}h {minutes}m",
-    countdownMinutes: "{minutes}m",
+    countdownDaysHours: "{days, plural, =1 {# day} other {# days}}, {hours, plural, =1 {# hour} other {# hours}}",
+    countdownHoursMinutes: "{hours, plural, =1 {# hour} other {# hours}}, {minutes, plural, =1 {# minute} other {# minutes}}",
+    countdownMinutes: "{minutes, plural, =1 {# minute} other {# minutes}}",
   },
   bookingManagementPage: {
     bookingManagementNotApplicable: "Booking Management Not Applicable",
@@ -431,4 +431,12 @@ export default {
         disclaimer: "AI recommendations are for informational purposes. Please verify details independently.",
     }
   },
+  daySelect: {
+    daysUnit: "{count, plural, =1 {# day} other {# days}}",
+    oneWeek: "{count} days (1 week)",
+    twoWeeks: "{count} days (2 weeks)",
+    threeWeeks: "{count} days (3 weeks)",
+    oneMonthApprox: "{count} days (approx. 1 month)",
+    selectPlaceholder: "Select duration",
+  }
 } as const;

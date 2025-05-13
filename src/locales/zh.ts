@@ -431,4 +431,12 @@ export default {
         disclaimer: "AI 推荐仅供参考。请独立核实详细信息。",
     }
   },
+  daySelect: {
+    daysUnit: "{count}天",
+    oneWeek: "{count}天 (1周)",
+    twoWeeks: "{count}天 (2周)",
+    threeWeeks: "{count}天 (3周)",
+    oneMonthApprox: "{count}天 (约1个月)",
+    selectPlaceholder: "选择时长",
+  }
 } as const;
