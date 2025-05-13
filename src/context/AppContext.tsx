@@ -59,12 +59,94 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const currentLocale = useCurrentLocale(); 
 
+  const updateAndStoreContext = useCallback((newContext: CurrentAppContext) => {
+    setAppContext(newContext);
+    if (newContext.status === 'authenticated' || newContext.status === 'guest') {
+      localStorage.setItem('appContext', JSON.stringify(newContext));
+    } else {
+      localStorage.removeItem('appContext');
+    }
+  }, []);
+
+  const loginAsUser = useCallback((userType: 'live' | 'multi') => {
+    const user = userType === 'live' ? MOCK_USER_LIVE : MOCK_USER_MULTI;
+    const localeStr = String(currentLocale); 
+    const localePathPrefix = `/${localeStr}`;
+
+    if (user.activeReservations.length === 0) {
+        updateAndStoreContext({ status: 'authenticated', user, activeReservation: null });
+        router.push(`${localePathPrefix}/dashboard`); 
+    } else if (user.activeReservations.length === 1) {
+        updateAndStoreContext({ status: 'authenticated', user, activeReservation: user.activeReservations[0] });
+        router.push(`${localePathPrefix}/dashboard`);
+    } else {
+        updateAndStoreContext({ status: 'authenticated', user, activeReservation: null }); 
+        router.push(`${localePathPrefix}/select-reservation`); 
+    }
+  }, [router, currentLocale, updateAndStoreContext]);
+
+  const loginAsStayGuest = useCallback((reservationNumber: string, phone: string): boolean => {
+    const localeStr = String(currentLocale); 
+    const localePathPrefix = `/${localeStr}`;
+    if (reservationNumber === MOCK_STAY_GUEST_RESERVATION.reservationNumber && phone === '111-2222') {
+      const guestData: StayGuestData = {
+        reservationNumber,
+        phone,
+        reservation: MOCK_STAY_GUEST_RESERVATION,
+      };
+      updateAndStoreContext({ status: 'guest', guestData, activeReservation: MOCK_STAY_GUEST_RESERVATION });
+      router.push(`${localePathPrefix}/dashboard`);
+      return true;
+    }
+    return false; 
+  }, [router, currentLocale, updateAndStoreContext]);
+
+  const selectReservation = useCallback((reservationId: string) => {
+    const localeStr = String(currentLocale); 
+    const localePathPrefix = `/${localeStr}`;
+    
+    setAppContext(prevContext => {
+      if (prevContext.status === 'authenticated') {
+        const newActiveReservation = prevContext.user.activeReservations.find(r => r.id === reservationId);
+        if (newActiveReservation) {
+          const newContextState = { ...prevContext, activeReservation: newActiveReservation };
+          localStorage.setItem('appContext', JSON.stringify(newContextState));
+          router.push(`${localePathPrefix}/dashboard`);
+          return newContextState;
+        } else {
+          console.error("Selected reservation ID not found in user's list.");
+        }
+      } else {
+          console.error("selectReservation called when not authenticated.");
+      }
+      return prevContext;
+    });
+  }, [router, currentLocale]);
+
+  const switchReservation = useCallback((reservationId: string) => {
+    const localeStr = String(currentLocale);
+     setAppContext(prevContext => {
+        if (prevContext.status === 'authenticated') {
+            const newActiveReservation = prevContext.user.activeReservations.find(r => r.id === reservationId);
+            if (newActiveReservation && newActiveReservation.id !== prevContext.activeReservation?.id) {
+                 const newContextState = { ...prevContext, activeReservation: newActiveReservation };
+                 localStorage.setItem('appContext', JSON.stringify(newContextState));
+                 router.push(`/${localeStr}/dashboard`); 
+                 return newContextState;
+            }
+        }
+        return prevContext;
+     });
+  }, [router, currentLocale]);
+
+  const logout = useCallback(() => {
+    const localeStr = String(currentLocale); 
+    updateAndStoreContext({ status: 'unauthenticated' });
+    router.push(`/${localeStr}/login`);
+  }, [router, currentLocale, updateAndStoreContext]);
+
   useEffect(() => {
-    // Only proceed if currentLocale is defined.
-    // This effect now depends on currentLocale.
     if (typeof currentLocale === 'undefined') {
-      // Set to loading if locale is not yet available, to ensure AppContext reflects this.
-      // This might be redundant if the initial state is already 'loading', but ensures consistency.
       if (appContext.status !== 'loading') {
         setAppContext({ status: 'loading' });
       }
@@ -90,14 +172,13 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('appContext'); 
       }
     }
-    // Only update if the loaded state is different or if current status is loading (initial load after locale defined)
+    
     if (JSON.stringify(appContext) !== JSON.stringify(loadedState) || appContext.status === 'loading') {
        setAppContext(loadedState);
     }
-  }, [currentLocale, appContext.status]); // Added currentLocale and appContext.status as dependencies. appContext.status ensures re-evaluation if status changes externally.
+  }, [currentLocale, appContext.status]); // Removed appContext from dependencies to avoid re-running when appContext itself changes due to setAppContext.
 
-  // Loader displayed if locale is not yet available from I18nProviderClient
-  // or if AppContext itself is in a 'loading' state (e.g., during initial localStorage read).
+
   if (typeof currentLocale === 'undefined' || appContext.status === 'loading') {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background">
@@ -107,80 +188,6 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  const updateAndStoreContext = (newContext: CurrentAppContext) => {
-    setAppContext(newContext);
-    if (newContext.status === 'authenticated' || newContext.status === 'guest') {
-      localStorage.setItem('appContext', JSON.stringify(newContext));
-    } else {
-      localStorage.removeItem('appContext');
-    }
-  };
-
-  const loginAsUser = useCallback((userType: 'live' | 'multi') => {
-    const user = userType === 'live' ? MOCK_USER_LIVE : MOCK_USER_MULTI;
-    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
-    const localePathPrefix = `/${localeStr}`;
-
-    if (user.activeReservations.length === 0) {
-        updateAndStoreContext({ status: 'authenticated', user, activeReservation: null });
-        router.push(`${localePathPrefix}/dashboard`); 
-    } else if (user.activeReservations.length === 1) {
-        updateAndStoreContext({ status: 'authenticated', user, activeReservation: user.activeReservations[0] });
-        router.push(`${localePathPrefix}/dashboard`);
-    } else {
-        updateAndStoreContext({ status: 'authenticated', user, activeReservation: null }); // activeReservation is null initially
-        router.push(`${localePathPrefix}/select-reservation`); 
-    }
-  }, [router, currentLocale]);
-
-  const loginAsStayGuest = useCallback((reservationNumber: string, phone: string): boolean => {
-    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
-    const localePathPrefix = `/${localeStr}`;
-    if (reservationNumber === MOCK_STAY_GUEST_RESERVATION.reservationNumber && phone === '111-2222') {
-      const guestData: StayGuestData = {
-        reservationNumber,
-        phone,
-        reservation: MOCK_STAY_GUEST_RESERVATION,
-      };
-      updateAndStoreContext({ status: 'guest', guestData, activeReservation: MOCK_STAY_GUEST_RESERVATION });
-      router.push(`${localePathPrefix}/dashboard`);
-      return true;
-    }
-    return false; 
-  }, [router, currentLocale]);
-
-  const selectReservation = useCallback((reservationId: string) => {
-    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
-    const localePathPrefix = `/${localeStr}`;
-    if (appContext.status === 'authenticated') {
-      const newActiveReservation = appContext.user.activeReservations.find(r => r.id === reservationId);
-      if (newActiveReservation) {
-        updateAndStoreContext({ ...appContext, activeReservation: newActiveReservation });
-        router.push(`${localePathPrefix}/dashboard`); 
-      } else {
-        console.error("Selected reservation ID not found in user's list.");
-      }
-    } else {
-        console.error("selectReservation called when not authenticated.");
-    }
-  }, [appContext, router, currentLocale]);
-
-  const switchReservation = useCallback((reservationId: string) => {
-    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
-    if (appContext.status === 'authenticated') {
-      const newActiveReservation = appContext.user.activeReservations.find(r => r.id === reservationId);
-      if (newActiveReservation && newActiveReservation.id !== appContext.activeReservation?.id) {
-        updateAndStoreContext({ ...appContext, activeReservation: newActiveReservation });
-        router.push(`/${localeStr}/dashboard`); 
-      }
-    }
-  }, [appContext, router, currentLocale]);
-
-  const logout = useCallback(() => {
-    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
-    updateAndStoreContext({ status: 'unauthenticated' });
-    router.push(`/${localeStr}/login`);
-  }, [router, currentLocale]);
 
   return (
     <AppContext.Provider value={{ appContext, loginAsUser, loginAsStayGuest, selectReservation, logout, switchReservation }}>
