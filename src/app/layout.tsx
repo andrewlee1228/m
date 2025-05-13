@@ -1,25 +1,36 @@
+
 import type { Metadata } from 'next';
-// Inter font import is removed as it's handled by [locale]/layout.tsx
-import './globals.css';
+import { Inter } from 'next/font/google';
+import './globals.css'; // Ensure globals.css is imported here
 import { Toaster } from "@/components/ui/toaster";
 import { AppWrapper } from '@/context/AppContext';
+import { getCurrentLocaleFromServer } from '@/lib/i18n/server'; // For server-side lang attribute
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+});
 
 export const metadata: Metadata = {
-  title: 'Axxel Living', // This can be overridden by locale-specific metadata in [locale]/layout.tsx
+  title: 'Axxel Living',
   description: 'Your integrated living and stay management app.',
 };
 
-export default function RootLayout({
-  children, // children here is the actual page component (e.g., app/[locale]/some-page/page.tsx)
+export default async function RootLayout({ // Make it async
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getCurrentLocaleFromServer(); // Get current locale for lang attribute
+
   return (
-    // <html> and <body> are rendered by app/[locale]/layout.tsx.
-    // I18nProviderClient from app/[locale]/layout.tsx wraps this RootLayout's content.
-    <AppWrapper>
-      {children} {/* Let sub-layouts (like DashboardLayout) or pages define their own <main> tag */}
-      <Toaster />
-    </AppWrapper>
+    <html lang={locale} className={inter.variable}>
+      <body>
+        <AppWrapper>
+          {children} {/* Children will be content from app/[locale]/layout.tsx and then further nested pages/layouts */}
+          <Toaster />
+        </AppWrapper>
+      </body>
+    </html>
   );
 }

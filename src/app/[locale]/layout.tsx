@@ -1,36 +1,28 @@
+
 // src/app/[locale]/layout.tsx
+'use client'; // Keep 'use client' if I18nProviderClient requires it or for any client-side logic here
+
 import type { ReactNode } from 'react';
+// No useEffect needed for lang if parent sets it server-side.
 import { I18nProviderClient } from '@/lib/i18n/client';
 import { locales } from '@/lib/i18n/config';
-import { Inter } from 'next/font/google';
-import '../globals.css'; // Path to src/app/globals.css
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-});
+// Inter font import and globals.css import are removed as they are in app/layout.tsx
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-// Metadata can also be generated dynamically per locale here if needed:
-// export async function generateMetadata({ params: { locale } }: { params: { locale: string }}) { ... }
-
 export default function LocaleLayout({
-  children, // children here is the <RootLayout> component from app/layout.tsx
+  children, // children here is the actual page content (e.g., app/[locale]/dashboard/page.tsx) or nested layouts
   params: { locale },
 }: {
   children: ReactNode;
   params: { locale: string };
 }) {
   return (
-    <html lang={locale} className={inter.variable}>
-      <body>
-        <I18nProviderClient locale={locale}>
-          {children} {/* This will render the RootLayout and its content */}
-        </I18nProviderClient>
-      </body>
-    </html>
+    // No <html> or <body> tags here, as they are in the parent app/layout.tsx
+    <I18nProviderClient locale={locale}>
+      {children}
+    </I18nProviderClient>
   );
 }
