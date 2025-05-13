@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAppContext } from '@/context/AppContext';
@@ -49,7 +50,7 @@ export default function BookingManagementPage() {
 
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(currentLocale, { year: 'numeric', month: 'long', day: 'numeric' });
+    return new Date(dateString).toLocaleDateString(String(currentLocale), { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   return (

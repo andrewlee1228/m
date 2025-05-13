@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useAppContext } from '@/context/AppContext';
@@ -141,7 +142,7 @@ export default function MaintenanceListPage() {
             <TableBody>
               {mockMaintenanceRequests.map((request) => (
                 <TableRow key={request.id}>
-                  <TableCell>{new Date(request.submittedAt).toLocaleDateString(currentLocale)}</TableCell>
+                  <TableCell>{new Date(request.submittedAt).toLocaleDateString(String(currentLocale))}</TableCell>
                   <TableCell>{translateCategory(request.category)}</TableCell>
                   <TableCell className="font-medium max-w-xs truncate">{request.description}</TableCell>
                   <TableCell className="text-center">

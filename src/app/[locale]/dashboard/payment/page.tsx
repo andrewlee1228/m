@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAppContext } from '@/context/AppContext';
@@ -61,7 +62,7 @@ export default function RentPaymentPage() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(currentLocale);
+    return new Date(dateString).toLocaleDateString(String(currentLocale));
   };
 
   const translateStatus = (status: Payment['status']) => {

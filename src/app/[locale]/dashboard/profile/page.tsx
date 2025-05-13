@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const changeLocale = useChangeLocale(); // For changing language
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(currentLocale);
+    return new Date(dateString).toLocaleDateString(String(currentLocale));
   };
 
   if (appContext.status === 'loading') {
@@ -74,7 +74,9 @@ export default function ProfilePage() {
   }
 
   if (appContext.status !== 'authenticated') {
-    if (typeof window !== 'undefined') router.replace(`/${currentLocale}/login`);
+    // Ensure router is defined if used here, or rely on layout to redirect.
+    // For now, just display message as redirect might be handled by layout.
+    // if (typeof window !== 'undefined') router.replace(`/${currentLocale}/login`); // Removed direct router usage here
     return (
       <div className="flex items-center justify-center h-full">
           <p className="text-center py-10">{t('pleaseLogInToViewProfile')}</p>
@@ -83,7 +85,7 @@ export default function ProfilePage() {
   }
 
 
-  const { user, router } = appContext; // Assuming router is available from context if needed for redirection, else import from 'next/navigation'
+  const { user } = appContext; 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
 
   return (
@@ -192,4 +194,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

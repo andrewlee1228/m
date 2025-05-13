@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Reservation } from '@/types';
@@ -65,10 +66,10 @@ export default function StayHome({ user, reservation }: StayHomeProps) {
     calculateCountdown();
     const intervalId = setInterval(calculateCountdown, 60000); 
     return () => clearInterval(intervalId);
-  }, [reservation.endDate, reservation.startDate, currentLocale, t]);
+  }, [reservation.endDate, reservation.startDate, t]); // Removed currentLocale from deps as it's stable
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(currentLocale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    return new Date(dateString).toLocaleDateString(String(currentLocale), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   return (

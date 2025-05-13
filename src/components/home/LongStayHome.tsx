@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Reservation, CommunityEvent } from '@/types';
@@ -25,10 +26,10 @@ export default function LongStayHome({ user, reservation }: LongStayHomeProps) {
   const upcomingEvent = mockLongStayEvents.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
   const formatDate = (dateString: string, options?: Intl.DateTimeFormatOptions) => {
-    return new Date(dateString).toLocaleDateString(currentLocale, options);
+    return new Date(dateString).toLocaleDateString(String(currentLocale), options);
   };
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
+    return new Date(dateString).toLocaleTimeString(String(currentLocale), { hour: '2-digit', minute: '2-digit' });
   };
   
   return (

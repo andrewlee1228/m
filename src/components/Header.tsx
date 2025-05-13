@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -41,7 +42,7 @@ export default function Header() {
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
         <div className="container flex h-16 items-center justify-between px-4">
           {/* Link to locale-prefixed root or splash page */}
-          <Link href={`/${currentLocale}`} legacyBehavior><a className="flex items-center space-x-2"><AppLogo className="h-7 w-auto" /></a></Link>
+          <Link href={`/${currentLocale}`} legacyBehavior><a className="flex items-center space-x-2"><AppLogo className="h-7 w-auto" textColor="hsl(var(--primary))" /></a></Link>
         </div>
       </header>
     );
@@ -60,7 +61,7 @@ export default function Header() {
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return '';
     try {
-      return new Date(dateString).toLocaleDateString(currentLocale);
+      return new Date(dateString).toLocaleDateString(String(currentLocale));
     } catch (e) {
         return 'Invalid Date';
     }
@@ -71,7 +72,7 @@ export default function Header() {
       <div className="container flex h-20 items-center justify-between px-4 sm:px-6">
         <Link href={`/${currentLocale}/dashboard`} legacyBehavior>
           <a className="flex items-center">
-            <AppLogo className="h-8 w-auto" />
+            <AppLogo className="h-8 w-auto" textColor="hsl(var(--primary))" />
           </a>
         </Link>
 

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAppContext } from '@/context/AppContext';
@@ -49,8 +50,8 @@ export default function CheckInOutPage() {
   // Logic adjustment: canCheckOut should be true from check-in day onwards until end of checkout day
   const canCheckOut = now >= checkinStartOfDay && now <= checkoutEndOfDay;
 
-  const formatDate = (date: Date) => date.toLocaleDateString(currentLocale);
-  const formatTime = (date: Date) => date.toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
+  const formatDate = (date: Date) => date.toLocaleDateString(String(currentLocale));
+  const formatTime = (date: Date) => date.toLocaleTimeString(String(currentLocale), { hour: '2-digit', minute: '2-digit' });
 
   const handleCheckIn = () => {
     toast({ title: t('checkInInitiatedToast'), description: t('followQRInstructionsToast') });

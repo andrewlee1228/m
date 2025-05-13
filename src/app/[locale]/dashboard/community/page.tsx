@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAppContext } from '@/context/AppContext';
@@ -41,7 +42,7 @@ export default function CommunityEventsPage() {
   const pastEvents = branchEvents.filter(event => new Date(event.date) < new Date()).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(currentLocale, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return new Date(dateString).toLocaleDateString(String(currentLocale), { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
 
   const EventCard = ({ event }: { event: CommunityEvent }) => (

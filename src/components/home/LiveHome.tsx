@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Reservation, Payment, MaintenanceRequest, CommunityEvent } from '@/types';
@@ -36,10 +37,10 @@ export default function LiveHome({ user, reservation }: LiveHomeProps) {
   const upcomingEvent = mockCommunityEvents.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
   const formatDate = (dateString: string, options?: Intl.DateTimeFormatOptions) => {
-    return new Date(dateString).toLocaleDateString(currentLocale, options);
+    return new Date(dateString).toLocaleDateString(String(currentLocale), options);
   };
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
+    return new Date(dateString).toLocaleTimeString(String(currentLocale), { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -69,7 +70,7 @@ export default function LiveHome({ user, reservation }: LiveHomeProps) {
           <CardContent>
             {upcomingPayment ? (
               <>
-                <div className="text-2xl font-bold">{upcomingPayment.currency} {upcomingPayment.amount.toFixed(2)}</div>
+                <div className="text-2xl font-bold text-primary">{upcomingPayment.currency} {upcomingPayment.amount.toFixed(2)}</div>
                 <p className="text-xs text-muted-foreground">
                   {t('dueForDate', { date: formatDate(upcomingPayment.date), description: upcomingPayment.description})}
                 </p>

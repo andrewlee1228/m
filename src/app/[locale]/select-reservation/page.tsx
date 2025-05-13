@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -54,7 +55,7 @@ export default function SelectReservationPage() {
     }
   };
 
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString(currentLocale, { year: 'numeric', month: 'short', day: 'numeric' });
+  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString(String(currentLocale), { year: 'numeric', month: 'short', day: 'numeric' });
 
   if (!isReady || appContext.status !== 'authenticated') {
     return (
