@@ -17,8 +17,8 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    --primary: 180 100% 25.1%; /* Deep Teal #008080 */
-    --primary-foreground: 0 0% 98%; /* White/Light */
+    --primary: 152 82% 39%; /* New Primary Green #12B76A */
+    --primary-foreground: 240 10% 3.9%; /* Dark text for contrast on new primary */
 
     --secondary: 0 0% 96.1%; /* Slightly off-white for secondary elements */
     --secondary-foreground: 240 5.9% 10%;
@@ -34,7 +34,7 @@ body {
 
     --border: 0 0% 89.8%; /* Light gray border */
     --input: 0 0% 92%; /* Input background, slightly different from main bg */
-    --ring: 180 100% 25.1%; /* Deep Teal for focus rings */
+    --ring: 152 82% 39%; /* New Primary Green for focus rings */
 
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -45,12 +45,12 @@ body {
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 180 100% 25.1%;
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary: 152 82% 39%; /* New Primary Green for sidebar */
+    --sidebar-primary-foreground: 240 10% 3.9%; /* Dark text for sidebar primary */
     --sidebar-accent: 16 100% 65.7%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 180 100% 25.1%;
+    --sidebar-ring: 152 82% 39%; /* New Primary Green for sidebar rings */
   }
 
   .dark {
@@ -63,8 +63,8 @@ body {
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 180 100% 35%; /* Slightly lighter Deep Teal for dark mode */
-    --primary-foreground: 0 0% 98%;
+    --primary: 152 82% 45%; /* Lighter Green for dark mode #20D986 */
+    --primary-foreground: 0 0% 98%; /* Light text for contrast on dark primary */
 
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -80,7 +80,7 @@ body {
 
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 180 100% 35%;
+    --ring: 152 82% 45%; /* Lighter Green for dark mode rings */
 
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -90,12 +90,12 @@ body {
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 180 100% 35%;
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary: 152 82% 45%; /* Lighter Green for dark mode sidebar */
+    --sidebar-primary-foreground: 0 0% 98%; /* Light text for dark sidebar primary */
     --sidebar-accent: 16 100% 55%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 180 100% 35%;
+    --sidebar-ring: 152 82% 45%; /* Lighter Green for dark mode sidebar rings */
   }
 }
 
