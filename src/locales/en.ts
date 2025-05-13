@@ -1,3 +1,4 @@
+ts
 // src/locales/en.ts
 export default {
   common: {
@@ -260,6 +261,11 @@ export default {
     accountSecurity: "Account Security",
     changePassword: "Change Password",
     enable2FA: "Consider enabling Two-Factor Authentication for enhanced security.",
+    languageSettings: {
+      title: "Language Settings",
+      language: "Language",
+      languageSelectPlaceholder: "Select language"
+    }
   },
   selectReservationPage: {
     loading: "Loading...",

@@ -1,3 +1,4 @@
+tsx
 "use client";
 
 import { useAppContext } from '@/context/AppContext';
@@ -6,16 +7,20 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Phone, Edit3, Shield, Loader2 } from 'lucide-react';
+import { User, Mail, Phone, Edit3, Shield, Loader2, Globe } from 'lucide-react'; // Added Globe
 import UserTypeBadge from '@/components/UserTypeBadge';
-import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
-import Link from 'next/link'; // Import Link for navigation
+import { useScopedI18n, useCurrentLocale, useChangeLocale } from '@/lib/i18n/client'; // Added useChangeLocale
+import Link from 'next/link'; 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Added Select components
+import type { Locale } from '@/lib/i18n/config'; // Added Locale type
 
 export default function ProfilePage() {
   const { appContext, logout } = useAppContext();
   const t = useScopedI18n('profilePage');
   const commonT = useScopedI18n('common');
+  const settingsT = useScopedI18n('settingsPage'); // For language names
   const currentLocale = useCurrentLocale();
+  const changeLocale = useChangeLocale(); // For changing language
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(currentLocale);
@@ -45,15 +50,31 @@ export default function ProfilePage() {
                        <Button onClick={logout} variant="outline" className="w-full mt-6">{t('endGuestSession')}</Button>
                   </CardContent>
               </Card>
+
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center"><Globe className="mr-2 h-5 w-5 text-primary" /> {t('languageSettings.title')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Label htmlFor="language-guest" className="font-medium block mb-1.5">{t('languageSettings.language')}</Label>
+                  <Select value={currentLocale} onValueChange={(value) => changeLocale(value as Locale)}>
+                    <SelectTrigger id="language-guest" className="w-full sm:w-[200px]">
+                      <SelectValue placeholder={t('languageSettings.languageSelectPlaceholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">{settingsT('languages.en')}</SelectItem>
+                      <SelectItem value="ko">{settingsT('languages.ko')}</SelectItem>
+                      <SelectItem value="zh">{settingsT('languages.zh')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
           </div>
       );
   }
 
   if (appContext.status !== 'authenticated') {
-    // This should be caught by layout, but good to have a fallback.
-    // Redirect or show a message.
-    // For simplicity, showing a message. A redirect might be better.
-    if (typeof window !== 'undefined') window.location.href = `/${currentLocale}/login`;
+    if (typeof window !== 'undefined') router.replace(`/${currentLocale}/login`);
     return (
       <div className="flex items-center justify-center h-full">
           <p className="text-center py-10">{t('pleaseLogInToViewProfile')}</p>
@@ -62,7 +83,7 @@ export default function ProfilePage() {
   }
 
 
-  const { user } = appContext;
+  const { user, router } = appContext; // Assuming router is available from context if needed for redirection, else import from 'next/navigation'
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
 
   return (
@@ -146,9 +167,28 @@ export default function ProfilePage() {
             </Button>
             <p className="text-xs text-muted-foreground mt-2">{t('enable2FA')}</p>
           </div>
-
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center"><Globe className="mr-2 h-5 w-5 text-primary" /> {t('languageSettings.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Label htmlFor="language-auth" className="font-medium block mb-1.5">{t('languageSettings.language')}</Label>
+          <Select value={currentLocale} onValueChange={(value) => changeLocale(value as Locale)}>
+            <SelectTrigger id="language-auth" className="w-full sm:w-[200px]">
+              <SelectValue placeholder={t('languageSettings.languageSelectPlaceholder')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="en">{settingsT('languages.en')}</SelectItem>
+              <SelectItem value="ko">{settingsT('languages.ko')}</SelectItem>
+              <SelectItem value="zh">{settingsT('languages.zh')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
+
     </div>
   );
 }

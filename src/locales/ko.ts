@@ -1,3 +1,4 @@
+ts
 // src/locales/ko.ts
 export default {
   common: {
@@ -260,6 +261,11 @@ export default {
     accountSecurity: "계정 보안",
     changePassword: "비밀번호 변경",
     enable2FA: "보안 강화를 위해 2단계 인증을 활성화하는 것을 고려해보세요.",
+    languageSettings: {
+      title: "언어 설정",
+      language: "언어",
+      languageSelectPlaceholder: "언어 선택"
+    }
   },
   selectReservationPage: {
     loading: "로딩 중...",

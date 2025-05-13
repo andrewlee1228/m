@@ -1,3 +1,4 @@
+ts
 // src/locales/zh.ts
 export default {
   common: {
@@ -260,6 +261,11 @@ export default {
     accountSecurity: "帐户安全",
     changePassword: "更改密码",
     enable2FA: "考虑启用双因素身份验证以增强安全性。",
+    languageSettings: {
+      title: "语言设置",
+      language: "语言",
+      languageSelectPlaceholder: "选择语言"
+    }
   },
   selectReservationPage: {
     loading: "加载中...",
