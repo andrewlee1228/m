@@ -25,9 +25,10 @@ const MOCK_USER_MULTI: AuthenticatedUser = {
   email: 'bob@example.com',
   phone: '555-5678',
   activeReservations: [
-    { id: 'res-multi-live-1', branchName: 'Riverside Complex', type: 'Live', startDate: '2022-06-01', endDate: '2025-05-31', unit: 'Unit 5B' },
-    { id: 'res-multi-stay-1', branchName: 'City Center Hotel', type: 'Stay', reservationNumber: 'STAY001', startDate: '2024-07-10', endDate: '2024-07-15', unit: 'Room 202' },
-    { id: 'res-multi-longstay-1', branchName: 'Executive Suites', type: 'LongStay', reservationNumber: 'LONG987', startDate: '2024-08-01', endDate: '2024-10-31', unit: 'Suite 300' },
+    { id: 'res-multi-live-1', branchName: '숭인', type: 'Live', startDate: '2022-06-01', endDate: '2025-05-31', unit: 'Unit 5B' },
+    { id: 'res-multi-live-2', branchName: '신설', type: 'Live', startDate: '2022-06-01', endDate: '2025-05-31', unit: 'Unit 203B' },
+    { id: 'res-multi-stay-1', branchName: '신설', type: 'Stay', reservationNumber: 'STAY001', startDate: '2024-07-10', endDate: '2024-07-15', unit: 'Room 202' },
+    { id: 'res-multi-longstay-1', branchName: '동대문', type: 'LongStay', reservationNumber: 'LONG987', startDate: '2024-08-01', endDate: '2024-10-31', unit: 'Suite 300' },
   ],
 };
 
