@@ -1,0 +1,170 @@
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "dynamicRoutes": [
+    {
+      "page": "/[locale]",
+      "regex": "^/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard",
+      "regex": "^/([^/]+?)/dashboard(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/booking",
+      "regex": "^/([^/]+?)/dashboard/booking(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/booking(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/check-in-out",
+      "regex": "^/([^/]+?)/dashboard/check\\-in\\-out(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/check\\-in\\-out(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/community",
+      "regex": "^/([^/]+?)/dashboard/community(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/community(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/facilities",
+      "regex": "^/([^/]+?)/dashboard/facilities(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/facilities(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/maintenance",
+      "regex": "^/([^/]+?)/dashboard/maintenance(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/maintenance(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/maintenance/new",
+      "regex": "^/([^/]+?)/dashboard/maintenance/new(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/maintenance/new(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/payment",
+      "regex": "^/([^/]+?)/dashboard/payment(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/payment(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/profile",
+      "regex": "^/([^/]+?)/dashboard/profile(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/profile(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/settings",
+      "regex": "^/([^/]+?)/dashboard/settings(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/settings(?:/)?$"
+    },
+    {
+      "page": "/[locale]/dashboard/stay/concierge",
+      "regex": "^/([^/]+?)/dashboard/stay/concierge(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/dashboard/stay/concierge(?:/)?$"
+    },
+    {
+      "page": "/[locale]/login",
+      "regex": "^/([^/]+?)/login(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/login(?:/)?$"
+    },
+    {
+      "page": "/[locale]/register",
+      "regex": "^/([^/]+?)/register(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/register(?:/)?$"
+    },
+    {
+      "page": "/[locale]/select-reservation",
+      "regex": "^/([^/]+?)/select\\-reservation(?:/)?$",
+      "routeKeys": {
+        "nxtPlocale": "nxtPlocale"
+      },
+      "namedRegex": "^/(?<nxtPlocale>[^/]+?)/select\\-reservation(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "RSC",
+    "varyHeader": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+    "prefetchHeader": "Next-Router-Prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "Next-Router-Segment-Prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  },
+  "rewrites": []
+}

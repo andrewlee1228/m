@@ -1,7 +1,7 @@
 
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css'; // Ensure globals.css is imported here
+import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { getCurrentLocaleFromServer } from '@/lib/i18n/server';
 import { defaultLocale, locales, type Locale } from '@/lib/i18n/config';
@@ -16,37 +16,37 @@ export const metadata: Metadata = {
   description: 'M - Your integrated living and stay management app.',
 };
 
-export default async function RootLayout({ // Make it async
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let localeToSet: Locale | string = defaultLocale; // Fallback to defaultLocale string
+  let localeToSet: Locale = defaultLocale; // Initialize with Locale type
 
   try {
     const serverLocale = await getCurrentLocaleFromServer();
     // Validate if the returned locale is one of the configured locales
-    if (locales.includes(serverLocale as Locale)) {
-      localeToSet = serverLocale;
+    if (locales.includes(serverLocale as Locale)) { // serverLocale from hook is Locale
+      localeToSet = serverLocale as Locale; // Ensure localeToSet is Locale
     } else {
       console.warn(
         `getCurrentLocaleFromServer returned an unexpected value: "${serverLocale}". Falling back to defaultLocale "${defaultLocale}".`
       );
-      // localeToSet remains defaultLocale
+      // localeToSet remains defaultLocale (which is Locale)
     }
   } catch (error) {
     console.error("Error in getCurrentLocaleFromServer:", error);
-    // localeToSet remains defaultLocale, a warning will be logged.
     console.warn(`Fell back to defaultLocale "${defaultLocale}" due to error.`);
+    // localeToSet remains defaultLocale (which is Locale)
   }
 
   return (
-    <html lang={String(localeToSet)} className={inter.variable}>
+    <html lang={localeToSet} className={inter.variable}> {/* Use localeToSet directly as it's Locale */}
       <body>
-        {/* AppWrapper moved to [locale]/layout.tsx to be within I18nProviderClient context */}
         {children}
         <Toaster />
       </body>
     </html>
   );
 }
+

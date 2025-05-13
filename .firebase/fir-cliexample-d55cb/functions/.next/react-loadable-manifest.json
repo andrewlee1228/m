@@ -1,0 +1,20 @@
+{
+  "lib/i18n/client.ts -> @/locales/en": {
+    "id": 7918,
+    "files": [
+      "static/chunks/918.639d1331776ce4b7.js"
+    ]
+  },
+  "lib/i18n/client.ts -> @/locales/ko": {
+    "id": 3267,
+    "files": [
+      "static/chunks/648.ea8dc4c57da4631f.js"
+    ]
+  },
+  "lib/i18n/client.ts -> @/locales/zh": {
+    "id": 4835,
+    "files": [
+      "static/chunks/835.f3895f12b84ddd82.js"
+    ]
+  }
+}
