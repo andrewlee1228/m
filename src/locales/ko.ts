@@ -415,6 +415,7 @@ export default {
         stayDurationPlaceholder: "예: 3일, 1주일",
         getRecommendationsButton: "추천 받기",
         generatingButton: "생성 중...",
+        validationError: "모든 필드를 입력해주세요: 관심사, 위치, 숙박 기간.",
     },
     toast: {
         recommendationsReadyTitle: "추천 준비 완료!",

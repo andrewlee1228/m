@@ -1,3 +1,4 @@
+// src/app/[locale]/dashboard/stay/concierge/page.tsx
 "use client";
 
 import { useState, type FormEvent, useEffect } from 'react';
@@ -13,17 +14,17 @@ import { aiConciergeForStayUsers, type AiConciergeInput, type AiConciergeOutput 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from '@/components/ui/separator';
 import { useScopedI18n } from '@/lib/i18n/client';
-import { DaySelect } from '@/components/shared/DaySelect'; // Import the new component
+import { DaySelect, dayOptionsConfig } from '@/components/shared/DaySelect';
 
 export default function AiConciergePage() {
   const { appContext } = useAppContext();
   const { toast } = useToast();
   const t = useScopedI18n('aiConciergePage');
-  const tDaySelect = useScopedI18n('daySelect'); // For DaySelect specific translations if needed
+  const tDaySelect = useScopedI18n('daySelect');
 
   const [interests, setInterests] = useState('');
   const [location, setLocation] = useState('');
-  const [stayDuration, setStayDuration] = useState('');
+  const [stayDurationDays, setStayDurationDays] = useState<string>(''); // Stores number of days as string e.g. "3", "7"
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<AiConciergeOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,19 +37,34 @@ export default function AiConciergePage() {
         const startDate = new Date(res.startDate);
         const endDate = new Date(res.endDate);
         const durationMs = endDate.getTime() - startDate.getTime();
-        const durationDays = Math.ceil(durationMs / (1000 * 60 * 60 * 24));
-        // Use daySelect scope for consistency if it has the generic "daysUnit"
-        setStayDuration(tDaySelect('daysUnit', { count: durationDays }));
+        let durationDaysNum = Math.ceil(durationMs / (1000 * 60 * 60 * 24));
+        if (durationDaysNum <= 0) durationDaysNum = 1; // Default to at least 1 day
+        
+        setStayDurationDays(String(durationDaysNum));
       }
     }
-  }, [appContext.status, appContext.activeReservation, tDaySelect]);
+  }, [appContext.status, appContext.activeReservation]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!interests || !location || !stayDuration) {
+
+    let humanReadableStayDuration = '';
+    if (stayDurationDays) {
+        const daysNum = parseInt(stayDurationDays, 10);
+        if (!isNaN(daysNum)) {
+            const matchingOptionConfig = dayOptionsConfig.find(opt => opt.days === daysNum);
+            if (matchingOptionConfig?.labelKeySuffix) {
+                humanReadableStayDuration = tDaySelect(matchingOptionConfig.labelKeySuffix, { count: daysNum });
+            } else {
+                humanReadableStayDuration = tDaySelect('daysUnit', { count: daysNum });
+            }
+        }
+    }
+
+    if (!interests || !location || !humanReadableStayDuration) {
         toast({
             title: t('error.alertTitle'),
-            description: "Please fill in all fields: interests, location, and stay duration.", // TODO: Add to i18n
+            description: t('form.validationError'), // Add this to i18n
             variant: "destructive",
         });
         return;
@@ -57,7 +73,7 @@ export default function AiConciergePage() {
     setError(null);
     setRecommendations(null);
 
-    const input: AiConciergeInput = { interests, location, stayDuration };
+    const input: AiConciergeInput = { interests, location, stayDuration: humanReadableStayDuration };
 
     try {
       const result = await aiConciergeForStayUsers(input);
@@ -139,15 +155,15 @@ export default function AiConciergePage() {
                 <Label htmlFor="stayDuration">{t('form.stayDurationLabel')}</Label>
                 <DaySelect
                   id="stayDuration"
-                  value={stayDuration}
-                  onValueChange={setStayDuration}
+                  value={stayDurationDays}
+                  onValueChange={setStayDurationDays}
                   placeholder={t('form.stayDurationPlaceholder')}
                   disabled={isLoading}
                   className="mt-1"
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading || !interests || !location || !stayDuration}>
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading || !interests || !location || !stayDurationDays}>
               {isLoading ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('form.generatingButton')}</>
               ) : (

@@ -415,6 +415,7 @@ export default {
         stayDurationPlaceholder: "e.g., 3 days, 1 week",
         getRecommendationsButton: "Get Recommendations",
         generatingButton: "Generating...",
+        validationError: "Please fill in all fields: interests, location, and stay duration.",
     },
     toast: {
         recommendationsReadyTitle: "Recommendations Ready!",

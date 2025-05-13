@@ -415,6 +415,7 @@ export default {
         stayDurationPlaceholder: "例如：3天、1周",
         getRecommendationsButton: "获取推荐",
         generatingButton: "生成中...",
+        validationError: "请填写所有字段：兴趣、位置和住宿时长。",
     },
     toast: {
         recommendationsReadyTitle: "推荐已准备就绪！",
