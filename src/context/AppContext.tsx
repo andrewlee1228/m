@@ -5,8 +5,8 @@ import type { ReactNode } from 'react';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { CurrentAppContext, AuthenticatedUser, Reservation, StayGuestData } from '@/types';
 import { useRouter } from 'next/navigation';
-import { useCurrentLocale } from '@/lib/i18n/client'; // Import useCurrentLocale
-import { Loader2 } from 'lucide-react'; // Import Loader2
+import { useCurrentLocale } from '@/lib/i18n/client'; 
+import { Loader2 } from 'lucide-react'; 
 
 // Mock data
 const MOCK_USER_LIVE: AuthenticatedUser = {
@@ -105,7 +105,8 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
 
   const loginAsUser = useCallback((userType: 'live' | 'multi') => {
     const user = userType === 'live' ? MOCK_USER_LIVE : MOCK_USER_MULTI;
-    const localePathPrefix = `/${currentLocale}`;
+    const localeStr = String(currentLocale);
+    const localePathPrefix = `/${localeStr}`;
 
     if (user.activeReservations.length === 0) {
         updateAndStoreContext({ status: 'authenticated', user, activeReservation: null });
@@ -120,7 +121,8 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
   }, [router, currentLocale]);
 
   const loginAsStayGuest = useCallback((reservationNumber: string, phone: string): boolean => {
-    const localePathPrefix = `/${currentLocale}`;
+    const localeStr = String(currentLocale);
+    const localePathPrefix = `/${localeStr}`;
     if (reservationNumber === MOCK_STAY_GUEST_RESERVATION.reservationNumber && phone === '111-2222') {
       const guestData: StayGuestData = {
         reservationNumber,
@@ -135,7 +137,8 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
   }, [router, currentLocale]);
 
   const selectReservation = useCallback((reservationId: string) => {
-    const localePathPrefix = `/${currentLocale}`;
+    const localeStr = String(currentLocale);
+    const localePathPrefix = `/${localeStr}`;
     if (appContext.status === 'authenticated') {
       const newActiveReservation = appContext.user.activeReservations.find(r => r.id === reservationId);
       if (newActiveReservation) {
@@ -150,18 +153,20 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
   }, [appContext, router, currentLocale]);
 
   const switchReservation = useCallback((reservationId: string) => {
+    const localeStr = String(currentLocale);
     if (appContext.status === 'authenticated') {
       const newActiveReservation = appContext.user.activeReservations.find(r => r.id === reservationId);
       if (newActiveReservation && newActiveReservation.id !== appContext.activeReservation?.id) {
         updateAndStoreContext({ ...appContext, activeReservation: newActiveReservation });
-        router.push(`/${currentLocale}/dashboard`); 
+        router.push(`/${localeStr}/dashboard`); 
       }
     }
   }, [appContext, router, currentLocale]);
 
   const logout = useCallback(() => {
+    const localeStr = String(currentLocale);
     updateAndStoreContext({ status: 'unauthenticated' });
-    router.push(`/${currentLocale}/login`);
+    router.push(`/${localeStr}/login`);
   }, [router, currentLocale]);
 
   return (
@@ -178,3 +183,4 @@ export const useAppContext = () => {
   }
   return context;
 };
+
