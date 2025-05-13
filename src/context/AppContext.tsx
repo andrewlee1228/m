@@ -59,20 +59,18 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const currentLocale = useCurrentLocale(); 
 
-  // If currentLocale is undefined, AppContext isn't "ready" yet.
-  // Render a loader to prevent further execution of AppWrapper logic
-  // and child rendering until locale is defined.
-  if (typeof currentLocale === 'undefined') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Initializing application...</p>
-      </div>
-    );
-  }
-
-  // Proceed with AppContext logic now that currentLocale is confirmed to be defined.
   useEffect(() => {
+    // Only proceed if currentLocale is defined.
+    // This effect now depends on currentLocale.
+    if (typeof currentLocale === 'undefined') {
+      // Set to loading if locale is not yet available, to ensure AppContext reflects this.
+      // This might be redundant if the initial state is already 'loading', but ensures consistency.
+      if (appContext.status !== 'loading') {
+        setAppContext({ status: 'loading' });
+      }
+      return;
+    }
+
     const storedContext = localStorage.getItem('appContext');
     let loadedState: CurrentAppContext = { status: 'unauthenticated' }; 
 
@@ -92,8 +90,22 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('appContext'); 
       }
     }
-    setAppContext(loadedState);
-  }, []);
+    // Only update if the loaded state is different or if current status is loading (initial load after locale defined)
+    if (JSON.stringify(appContext) !== JSON.stringify(loadedState) || appContext.status === 'loading') {
+       setAppContext(loadedState);
+    }
+  }, [currentLocale, appContext.status]); // Added currentLocale and appContext.status as dependencies. appContext.status ensures re-evaluation if status changes externally.
+
+  // Loader displayed if locale is not yet available from I18nProviderClient
+  // or if AppContext itself is in a 'loading' state (e.g., during initial localStorage read).
+  if (typeof currentLocale === 'undefined' || appContext.status === 'loading') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Initializing application...</p>
+      </div>
+    );
+  }
 
   const updateAndStoreContext = (newContext: CurrentAppContext) => {
     setAppContext(newContext);
@@ -106,7 +118,7 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
 
   const loginAsUser = useCallback((userType: 'live' | 'multi') => {
     const user = userType === 'live' ? MOCK_USER_LIVE : MOCK_USER_MULTI;
-    const localeStr = String(currentLocale);
+    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
     const localePathPrefix = `/${localeStr}`;
 
     if (user.activeReservations.length === 0) {
@@ -116,13 +128,13 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
         updateAndStoreContext({ status: 'authenticated', user, activeReservation: user.activeReservations[0] });
         router.push(`${localePathPrefix}/dashboard`);
     } else {
-        updateAndStoreContext({ status: 'authenticated', user, activeReservation: null });
+        updateAndStoreContext({ status: 'authenticated', user, activeReservation: null }); // activeReservation is null initially
         router.push(`${localePathPrefix}/select-reservation`); 
     }
   }, [router, currentLocale]);
 
   const loginAsStayGuest = useCallback((reservationNumber: string, phone: string): boolean => {
-    const localeStr = String(currentLocale);
+    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
     const localePathPrefix = `/${localeStr}`;
     if (reservationNumber === MOCK_STAY_GUEST_RESERVATION.reservationNumber && phone === '111-2222') {
       const guestData: StayGuestData = {
@@ -138,7 +150,7 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
   }, [router, currentLocale]);
 
   const selectReservation = useCallback((reservationId: string) => {
-    const localeStr = String(currentLocale);
+    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
     const localePathPrefix = `/${localeStr}`;
     if (appContext.status === 'authenticated') {
       const newActiveReservation = appContext.user.activeReservations.find(r => r.id === reservationId);
@@ -154,7 +166,7 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
   }, [appContext, router, currentLocale]);
 
   const switchReservation = useCallback((reservationId: string) => {
-    const localeStr = String(currentLocale);
+    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
     if (appContext.status === 'authenticated') {
       const newActiveReservation = appContext.user.activeReservations.find(r => r.id === reservationId);
       if (newActiveReservation && newActiveReservation.id !== appContext.activeReservation?.id) {
@@ -165,7 +177,7 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
   }, [appContext, router, currentLocale]);
 
   const logout = useCallback(() => {
-    const localeStr = String(currentLocale);
+    const localeStr = String(currentLocale); // currentLocale is guaranteed to be defined here
     updateAndStoreContext({ status: 'unauthenticated' });
     router.push(`/${localeStr}/login`);
   }, [router, currentLocale]);
