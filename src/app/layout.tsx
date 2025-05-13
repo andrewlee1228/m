@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css'; // Ensure globals.css is imported here
 import { Toaster } from "@/components/ui/toaster";
-import { AppWrapper } from '@/context/AppContext';
+// AppWrapper removed from here
 import { getCurrentLocaleFromServer } from '@/lib/i18n/server'; // For server-side lang attribute
 
 const inter = Inter({
@@ -26,11 +26,11 @@ export default async function RootLayout({ // Make it async
   return (
     <html lang={locale} className={inter.variable}>
       <body>
-        <AppWrapper>
-          {children} {/* Children will be content from app/[locale]/layout.tsx and then further nested pages/layouts */}
-          <Toaster />
-        </AppWrapper>
+        {/* AppWrapper moved to [locale]/layout.tsx to be within I18nProviderClient context */}
+        {children}
+        <Toaster />
       </body>
     </html>
   );
 }
+
