@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useAppContext } from '@/context/AppContext';
 import AppLogo from './AppLogo';
 import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet'; // Added SheetClose
 import { ChevronDown, LogOut, UserCircle, Settings, Repeat, Home, Building } from 'lucide-react';
 import UserTypeBadge from './UserTypeBadge';
 import { useRouter } from 'next/navigation';
@@ -17,9 +17,26 @@ export default function Header() {
   const t = useScopedI18n('header');
   const commonT = useScopedI18n('common');
   const currentLocale = useCurrentLocale();
+  const [isUserSheetOpen, setIsUserSheetOpen] = useState(false); // State for user sheet
+  const [isServiceSheetOpen, setIsServiceSheetOpen] = useState(false); // State for service sheet
+
+  const handleNavigate = (path: string) => {
+    setIsUserSheetOpen(false); // Close sheet before navigating
+    router.push(path);
+  };
+
+  const handleLogout = () => {
+    setIsUserSheetOpen(false);
+    logout();
+  };
+  
+  const handleSwitchAndClose = (reservationId: string) => {
+    switchReservation(reservationId);
+    setIsServiceSheetOpen(false); // Close sheet after switching
+  };
 
   if (appContext.status !== 'authenticated' && appContext.status !== 'guest') {
-    return ( 
+    return (
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
         <div className="container flex h-16 items-center justify-between px-4">
           <Link href="/" legacyBehavior><a className="flex items-center space-x-2"><AppLogo className="h-7 w-auto" /></a></Link>
@@ -29,23 +46,23 @@ export default function Header() {
   }
 
   const { activeReservation } = appContext;
-  const userName = appContext.status === 'authenticated' ? appContext.user.name : "Guest";
-  const userEmail = appContext.status === 'authenticated' ? appContext.user.email : activeReservation?.reservationNumber;
-  
+  const userName = appContext.status === 'authenticated' ? appContext.user.name : t('guestUser'); // Translate 'Guest'
+  const userEmail = appContext.status === 'authenticated' ? appContext.user.email : activeReservation?.reservationNumber || '';
+
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
+    return name?.split(' ')?.map(n => n[0])?.join('')?.toUpperCase() || '?'; // Handle potential undefined name
   }
 
-  const handleSwitchReservation = (reservationId: string) => {
-    if (appContext.status === 'authenticated') {
-      switchReservation(reservationId);
-    }
-  };
-  
   const canSwitch = appContext.status === 'authenticated' && appContext.user.activeReservations.length > 1;
 
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString(currentLocale);
-
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return '';
+    try {
+      return new Date(dateString).toLocaleDateString(currentLocale);
+    } catch (e) {
+        return 'Invalid Date';
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-card shadow-sm">
@@ -57,8 +74,9 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center space-x-3 sm:space-x-4">
+          {/* Service Context Switcher */}
           {activeReservation && (
-             <Sheet>
+             <Sheet open={isServiceSheetOpen} onOpenChange={setIsServiceSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" className={`flex flex-col items-end h-auto p-1 text-right ${canSwitch ? 'cursor-pointer' : 'cursor-default'}`}>
                   <div className="flex items-center">
@@ -72,7 +90,7 @@ export default function Header() {
                 </Button>
               </SheetTrigger>
               {canSwitch && appContext.status === 'authenticated' && (
-                <SheetContent side="top" className="w-full rounded-b-lg">
+                <SheetContent side="top" className="w-full max-w-md mx-auto rounded-b-lg">
                   <SheetHeader>
                     <SheetTitle>{t('switchServiceContext')}</SheetTitle>
                     <SheetDescription>
@@ -85,16 +103,16 @@ export default function Header() {
                         key={res.id}
                         variant={activeReservation.id === res.id ? "default" : "outline"}
                         className="w-full justify-start text-left h-auto py-2"
-                        onClick={() => handleSwitchReservation(res.id)}
+                        onClick={() => handleSwitchAndClose(res.id)} // Use handler to close sheet
                       >
                         <div className="flex flex-col">
                            <div className="flex items-center">
                             <span className="font-semibold">{res.branchName}</span>
                             {res.unit && <span className="text-xs text-muted-foreground ml-1">({res.unit})</span>}
                            </div>
-                          <div className="text-xs">
+                          <div className="text-xs flex items-center space-x-2">
                             <UserTypeBadge type={res.type} />
-                            <span className="ml-2 text-muted-foreground">
+                            <span className="text-muted-foreground">
                               {formatDate(res.startDate)} - {formatDate(res.endDate)}
                             </span>
                           </div>
@@ -102,12 +120,14 @@ export default function Header() {
                       </Button>
                     ))}
                   </div>
+                   {/* Add a close button if needed, though clicking an item closes it */}
+                   {/* <SheetClose asChild><Button variant="outline" className="mt-4">Cancel</Button></SheetClose> */}
                 </SheetContent>
               )}
             </Sheet>
           )}
-
-          <Sheet>
+          {/* User Profile/Menu */}
+          <Sheet open={isUserSheetOpen} onOpenChange={setIsUserSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                  <Avatar className="h-9 w-9">
@@ -129,24 +149,29 @@ export default function Header() {
                   </div>
                 </div>
               </SheetHeader>
-              <nav className="flex flex-col space-y-2">
-                <Button variant="ghost" className="justify-start text-base" onClick={() => router.push('/dashboard')}>
-                  <Home className="mr-2 h-5 w-5" /> {t('dashboard')}
-                </Button>
-                <Button variant="ghost" className="justify-start text-base" onClick={() => router.push('/dashboard/profile')}>
-                  <UserCircle className="mr-2 h-5 w-5" /> {commonT('profile')}
-                </Button>
-                <Button variant="ghost" className="justify-start text-base" onClick={() => router.push('/dashboard/settings')}>
-                  <Settings className="mr-2 h-5 w-5" /> {commonT('settings')}
-                </Button>
+              <nav className="flex flex-col space-y-1">
+                 {/* Wrap navigation items in SheetClose if you want them to close the sheet */}
+                 <Button variant="ghost" className="justify-start text-base" onClick={() => handleNavigate('/dashboard')}>
+                     <Home className="mr-2 h-5 w-5" /> {t('dashboard')}
+                 </Button>
+                 <Button variant="ghost" className="justify-start text-base" onClick={() => handleNavigate('/dashboard/profile')}>
+                    <UserCircle className="mr-2 h-5 w-5" /> {commonT('profile')}
+                 </Button>
+                 <Button variant="ghost" className="justify-start text-base" onClick={() => handleNavigate('/dashboard/settings')}>
+                    <Settings className="mr-2 h-5 w-5" /> {commonT('settings')}
+                 </Button>
+
                 {canSwitch && (
-                   <SheetTrigger asChild>
-                    <Button variant="ghost" className="justify-start text-base">
+                   // This trigger re-opens the *service switcher* sheet, not closes the current one.
+                   // Consider a different UX or just rely on the main header trigger.
+                   // For now, let's make it close the user sheet and the user can tap the service switcher if needed.
+                   <SheetClose asChild>
+                    <Button variant="ghost" className="justify-start text-base" onClick={() => setIsServiceSheetOpen(true)}>
                         <Repeat className="mr-2 h-5 w-5" /> {t('switchServiceContext')}
                     </Button>
-                   </SheetTrigger>
+                   </SheetClose>
                 )}
-                <Button variant="ghost" className="justify-start text-base text-destructive hover:text-destructive hover:bg-destructive/10" onClick={logout}>
+                <Button variant="ghost" className="justify-start text-base text-destructive hover:text-destructive hover:bg-destructive/10 mt-4" onClick={handleLogout}>
                   <LogOut className="mr-2 h-5 w-5" /> {commonT('logout')}
                 </Button>
               </nav>
@@ -157,3 +182,6 @@ export default function Header() {
     </header>
   );
 }
+
+// Add useState import
+import { useState } from 'react';

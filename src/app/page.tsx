@@ -1,3 +1,4 @@
+// src/app/page.tsx
 "use client";
 
 import { useEffect } from 'react';
@@ -11,26 +12,39 @@ export default function SplashPage() {
   const { appContext } = useAppContext();
 
   useEffect(() => {
+    // Wait until the context status is determined
     if (appContext.status === 'loading') {
-      // Still loading, wait for context to resolve
       return;
     }
 
+    // Add a small delay for the splash screen effect
     const timer = setTimeout(() => {
-      if (appContext.status === 'authenticated' || appContext.status === 'guest') {
-        if (appContext.status === 'authenticated' && appContext.user.activeReservations.length > 1 && !appContext.activeReservation ) {
-             // This case should be handled by selectReservation if activeReservation is not set after login for multi-reservation user
-            router.push('/select-reservation');
-        } else {
+      switch (appContext.status) {
+        case 'authenticated':
+          // If authenticated and has multiple reservations BUT no active one selected yet
+          // (This case might occur if context loaded weirdly, but login/select handles primary flow)
+          if (appContext.user.activeReservations.length > 1 && !appContext.activeReservation) {
+             router.push('/select-reservation');
+          } else {
+             // Handles single reservation, multi-reservation with one selected, or zero reservations
             router.push('/dashboard');
-        }
-      } else {
-        router.push('/login');
+          }
+          break;
+        case 'guest':
+          // Guest always goes to dashboard (as they only have one reservation context)
+          router.push('/dashboard');
+          break;
+        case 'unauthenticated':
+        default:
+          // Unauthenticated users go to login
+          router.push('/login');
+          break;
       }
-    }, 1500); // Splash screen duration
+    }, 1000); // Reduced splash screen duration slightly
 
+    // Cleanup the timer if the component unmounts or dependencies change
     return () => clearTimeout(timer);
-  }, [appContext, router]);
+  }, [appContext.status, appContext.activeReservation, appContext.user, router]); // Dependency array includes all relevant context parts
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-6">

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { CurrentAppContext, AuthenticatedUser, Reservation, StayGuestData, UserType } from '@/types';
+import type { CurrentAppContext, AuthenticatedUser, Reservation, StayGuestData } from '@/types';
 import { useRouter } from 'next/navigation';
 
 // Mock data
@@ -45,7 +45,7 @@ interface AppContextType {
   loginAsStayGuest: (reservationNumber: string, phone: string) => boolean;
   selectReservation: (reservationId: string) => void;
   logout: () => void;
-  switchReservation: (reservationId: string) => void;
+  switchReservation: (reservationId: string) => void; // Kept for explicit switching from header
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -54,53 +54,65 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
   const [appContext, setAppContext] = useState<CurrentAppContext>({ status: 'loading' });
   const router = useRouter();
 
+  // Effect to load context from localStorage on initial mount
   useEffect(() => {
-    // Simulate loading stored session
     const storedContext = localStorage.getItem('appContext');
+    let loadedState: CurrentAppContext = { status: 'unauthenticated' }; // Default if nothing found or invalid
+
     if (storedContext) {
       try {
         const parsedContext = JSON.parse(storedContext);
-        // Basic validation
-        if (parsedContext.status === 'authenticated' && parsedContext.user && parsedContext.activeReservation) {
-          setAppContext(parsedContext);
+        // Validate the loaded context structure
+        if (parsedContext.status === 'authenticated' && parsedContext.user && parsedContext.user.activeReservations) {
+          // Ensure activeReservation is valid or null
+          const activeRes = parsedContext.user.activeReservations.find((r: Reservation) => r.id === parsedContext.activeReservation?.id);
+          loadedState = { ...parsedContext, activeReservation: activeRes || null };
         } else if (parsedContext.status === 'guest' && parsedContext.guestData && parsedContext.activeReservation) {
-          setAppContext(parsedContext);
-        } else {
-          setAppContext({ status: 'unauthenticated' });
+          // Ensure guest reservation matches
+          if(parsedContext.activeReservation.id === parsedContext.guestData.reservation.id) {
+            loadedState = parsedContext;
+          }
         }
       } catch (error) {
         console.error("Failed to parse stored context:", error);
-        setAppContext({ status: 'unauthenticated' });
+        // Keep default 'unauthenticated' state
+        localStorage.removeItem('appContext'); // Clear invalid storage
       }
-    } else {
-      setAppContext({ status: 'unauthenticated' });
     }
+    setAppContext(loadedState);
   }, []);
-  
+
+  // Helper function to update state and localStorage
   const updateAndStoreContext = (newContext: CurrentAppContext) => {
     setAppContext(newContext);
-    localStorage.setItem('appContext', JSON.stringify(newContext));
+    // Only store if not loading or unauthenticated
+    if (newContext.status === 'authenticated' || newContext.status === 'guest') {
+      localStorage.setItem('appContext', JSON.stringify(newContext));
+    } else {
+      localStorage.removeItem('appContext');
+    }
   };
-
 
   const loginAsUser = useCallback((userType: 'live' | 'multi') => {
     const user = userType === 'live' ? MOCK_USER_LIVE : MOCK_USER_MULTI;
-    if (user.activeReservations.length === 1) {
-      updateAndStoreContext({ status: 'authenticated', user, activeReservation: user.activeReservations[0] });
-      router.push('/dashboard');
-    } else if (user.activeReservations.length > 1) {
-      // Store user data but not active reservation, redirect to selection
-      updateAndStoreContext({ status: 'authenticated', user, activeReservation: user.activeReservations[0] }); // Temp set first, then select
-      router.push('/select-reservation');
+    if (user.activeReservations.length === 0) {
+        // Authenticated, but no reservations
+        updateAndStoreContext({ status: 'authenticated', user, activeReservation: null });
+        router.push('/dashboard'); // Dashboard home should handle this state
+    } else if (user.activeReservations.length === 1) {
+        // Single reservation, set it as active
+        updateAndStoreContext({ status: 'authenticated', user, activeReservation: user.activeReservations[0] });
+        router.push('/dashboard');
     } else {
-      // No active reservations, handle appropriately (e.g., show a message or different dashboard)
-      // For now, treat as logged in with no specific context, or default to first (if any)
-      updateAndStoreContext({ status: 'authenticated', user, activeReservation: user.activeReservations[0] || null as any });
-      router.push('/dashboard'); // Or a page indicating no active reservations
+        // Multiple reservations, force selection
+        // Store user data, but initially no active reservation selected
+        updateAndStoreContext({ status: 'authenticated', user, activeReservation: null });
+        router.push('/select-reservation'); // Redirect to selection page
     }
   }, [router]);
 
   const loginAsStayGuest = useCallback((reservationNumber: string, phone: string): boolean => {
+    // Mock validation
     if (reservationNumber === MOCK_STAY_GUEST_RESERVATION.reservationNumber && phone === '111-2222') {
       const guestData: StayGuestData = {
         reservationNumber,
@@ -111,35 +123,41 @@ export const AppWrapper = ({ children }: { children: ReactNode }) => {
       router.push('/dashboard');
       return true;
     }
-    return false;
+    return false; // Indicate login failure
   }, [router]);
-  
+
+  // Called from SelectReservationPage AFTER user makes a choice
   const selectReservation = useCallback((reservationId: string) => {
     if (appContext.status === 'authenticated') {
       const newActiveReservation = appContext.user.activeReservations.find(r => r.id === reservationId);
       if (newActiveReservation) {
         updateAndStoreContext({ ...appContext, activeReservation: newActiveReservation });
-        router.push('/dashboard');
+        router.push('/dashboard'); // Navigate to dashboard after selection
+      } else {
+        console.error("Selected reservation ID not found in user's list.");
+        // Potentially logout or show error
       }
+    } else {
+        console.error("selectReservation called when not authenticated.");
+        // Should not happen if routing is correct
     }
-    // Guest users typically have only one reservation, so selection might not be applicable
-    // unless linking accounts or similar advanced scenarios.
   }, [appContext, router]);
 
+  // Called from Header dropdown to switch between already known reservations
   const switchReservation = useCallback((reservationId: string) => {
     if (appContext.status === 'authenticated') {
       const newActiveReservation = appContext.user.activeReservations.find(r => r.id === reservationId);
-      if (newActiveReservation) {
+      if (newActiveReservation && newActiveReservation.id !== appContext.activeReservation?.id) {
         updateAndStoreContext({ ...appContext, activeReservation: newActiveReservation });
-        // Potentially force a re-render or redirect to refresh dashboard content
-        router.push('/dashboard'); // Or use router.refresh() if appropriate
+        // No navigation needed here generally, as the header/layout updates.
+        // Force refresh if necessary for specific page data: router.refresh();
       }
     }
-  }, [appContext, router]);
+  }, [appContext]);
 
   const logout = useCallback(() => {
     updateAndStoreContext({ status: 'unauthenticated' });
-    localStorage.removeItem('appContext');
+    // localStorage is cleared by updateAndStoreContext
     router.push('/login');
   }, [router]);
 

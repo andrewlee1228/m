@@ -18,6 +18,7 @@ export default {
     viewEvents: '이벤트 보기',
     viewPayments: '결제 내역 보기',
     appLogoAriaLabel: 'Axxel 로고',
+    serviceType: '서비스 유형:', // Added for select-reservation
   },
   settingsPage: {
     title: '설정',
@@ -57,17 +58,20 @@ export default {
     switchServiceContext: '서비스 컨텍스트 전환',
     switchServiceDescription: '관리할 다른 활성 서비스를 선택하세요.',
     dashboard: '대시보드',
+    guestUser: '게스트', // Added for guest display name
   },
   bottomNav: {
     home: '홈',
     profile: '프로필',
     settings: '설정',
     payment: '결제',
-    maintenance: '유지보수',
+    maintenance: '요청', // Changed
     community: '커뮤니티',
     booking: '예약',
     services: '서비스',
     facilities: '시설',
+    checkInOut: '체크인/아웃', // Added
+    concierge: '컨시어지', // Added
   },
   userTypeBadge: {
     Live: '거주자',
@@ -85,10 +89,13 @@ export default {
     selectActiveServicePrompt: '사용 가능한 예약 중에서 관리할 활성 서비스를 선택해주세요.',
     selectAService: '서비스 선택',
     welcomeToAxxel: 'Axxel에 오신 것을 환영합니다!',
+    welcomeToAxxelName: '{name}님, Axxel에 오신 것을 환영합니다!', // Added personalized welcome
     noActiveReservations: '현재 이용 중인 예약이 없는 것 같습니다.',
     exploreProperties: '시설 둘러보기',
     makeAReservation: '예약하기',
     unknownReservationType: '알 수 없는 예약 유형입니다. 지원팀에 문의해주세요.',
+    unexpectedState: '예상치 못한 오류가 발생했습니다.', // Added
+    reloadPage: '페이지 새로고침', // Added
   },
   liveHomePage: {
     welcomeHome: "{name}님, 집에 오신 것을 환영합니다!",
@@ -250,6 +257,6 @@ export default {
     reservationNo: "예약 번호:",
     noActiveReservations: "활성 예약이 없습니다.",
     continueToSelectedService: "선택한 서비스로 계속",
-    logOut: "로그아웃",
+    logOut: "로그아웃", // common.logout 과 일치하도록 함
   },
 } as const;

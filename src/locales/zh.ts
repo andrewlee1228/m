@@ -18,6 +18,7 @@ export default {
     viewEvents: '查看活动',
     viewPayments: '查看付款',
     appLogoAriaLabel: 'Axxel 标志',
+    serviceType: '服务类型：', // Added for select-reservation
   },
   settingsPage: {
     title: '设置',
@@ -57,17 +58,20 @@ export default {
     switchServiceContext: '切换服务上下文',
     switchServiceDescription: '选择要管理的另一个活动服务。',
     dashboard: '仪表板',
+    guestUser: '访客', // Added for guest display name
   },
   bottomNav: {
     home: '首页',
     profile: '资料',
     settings: '设置',
     payment: '付款',
-    maintenance: '维护',
+    maintenance: '请求', // Changed
     community: '社区',
     booking: '预订',
     services: '服务',
     facilities: '设施',
+    checkInOut: '入住/退房', // Added
+    concierge: '礼宾', // Added
   },
   userTypeBadge: {
     Live: '住户',
@@ -85,10 +89,13 @@ export default {
     selectActiveServicePrompt: '请从您可用的预订中选择一个活动服务进行管理。',
     selectAService: '选择服务',
     welcomeToAxxel: '欢迎来到 Axxel！',
+    welcomeToAxxelName: '{name}，欢迎来到 Axxel！', // Added personalized welcome
     noActiveReservations: '您目前似乎没有任何有效的预订。',
     exploreProperties: '浏览房产',
     makeAReservation: '进行预订',
     unknownReservationType: '未知的预订类型。请联系支持人员。',
+    unexpectedState: '发生意外错误。', // Added
+    reloadPage: '重新加载页面', // Added
   },
   liveHomePage: {
     welcomeHome: "欢迎回家, {name}!",
@@ -250,6 +257,6 @@ export default {
     reservationNo: "预订号：",
     noActiveReservations: "您没有有效的预订。",
     continueToSelectedService: "继续使用所选服务",
-    logOut: "登出",
+    logOut: "登出", // 与 common.logout 保持一致
   },
 } as const;

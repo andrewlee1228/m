@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import AppLogo from '@/components/AppLogo';
 import UserTypeBadge from '@/components/UserTypeBadge';
-import { CheckCircle } from 'lucide-react'; // Removed ArrowRight
+import { CheckCircle, Loader2 } from 'lucide-react'; // Added Loader2
 import type { Reservation } from '@/types';
 import { useScopedI18n, useCurrentLocale } from '@/lib/i18n/client';
 
@@ -17,34 +17,61 @@ export default function SelectReservationPage() {
   const router = useRouter();
   const { appContext, selectReservation, logout } = useAppContext();
   const [selectedReservationId, setSelectedReservationId] = useState<string | undefined>(undefined);
+  const [isReady, setIsReady] = useState(false); // To prevent flicker before context is fully ready
   const t = useScopedI18n('selectReservationPage');
   const commonT = useScopedI18n('common');
   const currentLocale = useCurrentLocale();
 
   useEffect(() => {
+    // Wait for context to be fully loaded and authenticated
+    if (appContext.status === 'loading') {
+      setIsReady(false);
+      return;
+    }
+
     if (appContext.status === 'unauthenticated' || appContext.status === 'guest') {
-      router.push('/login');
-    } else if (appContext.status === 'authenticated' && appContext.user.activeReservations.length <= 1) {
-      router.push('/dashboard');
+      // Guests shouldn't be here, redirect
+      router.replace('/login');
+      return;
     }
-  }, [appContext, router]);
-  
-  useEffect(() => {
-    if (appContext.status === 'authenticated' && appContext.activeReservation) {
-      setSelectedReservationId(appContext.activeReservation.id);
+
+    if (appContext.status === 'authenticated') {
+      const reservations = appContext.user.activeReservations;
+      if (reservations.length <= 1) {
+        // If user somehow lands here with 0 or 1 reservation, redirect to dashboard
+        router.replace('/dashboard');
+        return;
+      }
+
+      // If we are here, user MUST have > 1 reservation
+      // Set initial selection if none is active yet or load from context
+      if (!selectedReservationId) { // Only set initial if not already set by user interaction
+         setSelectedReservationId(appContext.activeReservation?.id || reservations[0]?.id);
+      }
+      setIsReady(true); // Context is ready and applicable for this page
     }
-  }, [appContext]);
 
+  }, [appContext, router, selectedReservationId]); // Add selectedReservationId to prevent loop if needed
 
-  if (appContext.status === 'loading' || appContext.status === 'unauthenticated' || appContext.status === 'guest') {
+  const handleSelectAndContinue = () => {
+    if (selectedReservationId) {
+      selectReservation(selectedReservationId); // This function now handles navigation
+    }
+  };
+
+  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString(currentLocale, { year: 'numeric', month: 'short', day: 'numeric' });
+
+  // Show loading state until context is ready and validated
+  if (!isReady || appContext.status !== 'authenticated') {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-secondary p-4">
           <AppLogo className="w-32 h-auto mx-auto mb-8" />
-          <Card className="w-full max-w-md">
+          <Card className="w-full max-w-md text-center">
             <CardHeader>
                 <CardTitle>{t('loading')}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-col items-center space-y-3">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <p>{t('pleaseWait')}</p>
             </CardContent>
           </Card>
@@ -52,15 +79,8 @@ export default function SelectReservationPage() {
     );
   }
 
+  // At this point, appContext.status === 'authenticated' and reservations.length > 1
   const reservations = appContext.user.activeReservations;
-
-  const handleSelectReservation = () => {
-    if (selectedReservationId) {
-      selectReservation(selectedReservationId);
-    }
-  };
-  
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString(currentLocale, { year: 'numeric', month: 'short', day: 'numeric' });
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-secondary p-4 sm:p-6">
@@ -77,7 +97,7 @@ export default function SelectReservationPage() {
                 <Label
                   key={res.id}
                   htmlFor={res.id}
-                  className={`flex flex-col items-start space-x-3 space-y-0 rounded-md border p-4 transition-all hover:bg-accent/10
+                  className={`flex flex-col items-start space-x-3 space-y-0 rounded-md border p-4 transition-all cursor-pointer hover:bg-accent/10
                     ${selectedReservationId === res.id ? 'border-primary ring-2 ring-primary bg-primary/5' : 'border-border'}`}
                 >
                   <div className="flex items-center justify-between w-full">
@@ -91,7 +111,7 @@ export default function SelectReservationPage() {
                     <UserTypeBadge type={res.type} />
                   </div>
                   <div className="pl-8 pt-1 text-sm text-muted-foreground">
-                    <p>{t('service')} {res.type}</p>
+                    <p>{commonT('serviceType')} {res.type}</p> {/* Using common key */}
                     <p>{t('period')} {formatDate(res.startDate)} - {formatDate(res.endDate)}</p>
                     {res.reservationNumber && <p>{t('reservationNo')} {res.reservationNumber}</p>}
                   </div>
@@ -99,11 +119,12 @@ export default function SelectReservationPage() {
               ))}
             </RadioGroup>
           ) : (
+             // This case should technically be handled by the useEffect redirect, but good fallback
             <p className="text-center text-muted-foreground">{t('noActiveReservations')}</p>
           )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-3">
-          <Button onClick={handleSelectReservation} disabled={!selectedReservationId || reservations.length === 0} className="w-full bg-primary hover:bg-primary/90">
+          <Button onClick={handleSelectAndContinue} disabled={!selectedReservationId || reservations.length === 0} className="w-full bg-primary hover:bg-primary/90">
             <CheckCircle className="mr-2 h-4 w-4" /> {t('continueToSelectedService')}
           </Button>
           <Button variant="link" onClick={logout} className="text-muted-foreground">

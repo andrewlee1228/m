@@ -18,6 +18,7 @@ export default {
     viewEvents: 'View Events',
     viewPayments: 'View Payments',
     appLogoAriaLabel: 'Axxel Logo',
+    serviceType: 'Service Type:', // Added for select-reservation
   },
   settingsPage: {
     title: 'Settings',
@@ -57,17 +58,20 @@ export default {
     switchServiceContext: 'Switch Service Context',
     switchServiceDescription: 'Select another active service to manage.',
     dashboard: 'Dashboard',
+    guestUser: 'Guest', // Added for guest display name
   },
   bottomNav: {
     home: 'Home',
     profile: 'Profile',
     settings: 'Settings',
     payment: 'Payment',
-    maintenance: 'Maintenance',
+    maintenance: 'Requests', // Changed from Maintenance for brevity maybe? Or keep Maintenance
     community: 'Community',
-    booking: 'Booking', // Used for Stay check-in/out and LongStay booking mgt
-    services: 'Services', // For Stay Concierge
+    booking: 'Booking',
+    services: 'Services', // For Stay Concierge/Requests
     facilities: 'Facilities',
+    checkInOut: 'Check In/Out', // Added
+    concierge: 'Concierge', // Added
   },
   userTypeBadge: {
     Live: 'Live Resident',
@@ -77,7 +81,6 @@ export default {
   appContext: {
     // Potential translations for AppContext related messages if they were UI facing
   },
-  // Add more pages and components as needed
   dashboardPage: {
     loadingDashboard: 'Loading dashboard...',
     pleaseLogIn: 'Please log in to view your dashboard.',
@@ -86,10 +89,13 @@ export default {
     selectActiveServicePrompt: 'Please select an active service to manage from your available reservations.',
     selectAService: 'Select a Service',
     welcomeToAxxel: 'Welcome to Axxel!',
+    welcomeToAxxelName: 'Welcome to Axxel, {name}!', // Added personalized welcome
     noActiveReservations: "It looks like you don't have any active reservations with us at the moment.",
     exploreProperties: 'Explore Properties',
     makeAReservation: 'Make a Reservation',
     unknownReservationType: 'Unknown reservation type. Please contact support.',
+    unexpectedState: 'An unexpected error occurred.', // Added
+    reloadPage: 'Reload Page', // Added
   },
   liveHomePage: {
     welcomeHome: "Welcome Home, {name}!",
@@ -246,11 +252,11 @@ export default {
     pleaseWait: "Please wait while we check your details.",
     selectActiveService: "Select Your Active Service",
     multipleActiveServicesPrompt: "You have multiple active services. Please choose which one you'd like to manage.",
-    service: "Service:",
+    service: "Service:", // Changed from Service Type for consistency maybe?
     period: "Period:",
     reservationNo: "Reservation #:",
     noActiveReservations: "You have no active reservations.",
     continueToSelectedService: "Continue to Selected Service",
-    logOut: "Log out",
+    logOut: "Log out", // Keep this consistent with common.logout
   },
 } as const;
