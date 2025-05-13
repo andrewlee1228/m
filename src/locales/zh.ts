@@ -1,4 +1,3 @@
-ts
 // src/locales/zh.ts
 export default {
   common: {

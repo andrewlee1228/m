@@ -1,4 +1,3 @@
-ts
 // src/locales/en.ts
 export default {
   common: {

@@ -1,4 +1,3 @@
-ts
 // src/locales/ko.ts
 export default {
   common: {
