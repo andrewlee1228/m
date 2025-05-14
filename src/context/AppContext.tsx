@@ -4,8 +4,9 @@ import type { ReactNode } from 'react';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { CurrentAppContext, AuthenticatedUser, Reservation, StayGuestData } from '@/types';
 import { useRouter } from 'next/navigation';
-import { useCurrentLocale } from '@/lib/i18n/client'; 
-import { Loader2 } from 'lucide-react'; 
+// import { useCurrentLocale } from '@/lib/i18n/client'; // 제거 또는 주석 처리
+import { Loader2 } from 'lucide-react';
+import type { Locale } from '@/lib/i18n/config'; // Locale 타입 임포트
 
 // Mock data
 const MOCK_USER_LIVE: AuthenticatedUser = {
@@ -53,10 +54,11 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export const AppWrapper = ({ children }: { children: ReactNode }) => {
+export const AppWrapper = ({ children, locale }: { children: ReactNode; locale: Locale }) => {
   const [appContext, setAppContext] = useState<CurrentAppContext>({ status: 'loading' });
   const router = useRouter();
-  const currentLocale = useCurrentLocale(); 
+  // const currentLocale = useCurrentLocale(); // 이 줄 제거 또는 주석 처리
+  const currentLocale = locale; // 전달받은 locale 사용
 
   const updateAndStoreContext = useCallback((newContext: CurrentAppContext) => {
     setAppContext(newContext);

@@ -7,7 +7,7 @@ import { locales, defaultLocale } from './lib/i18n/config';
 const i18nMiddlewareHandler = createI18nMiddleware({
   locales: locales,
   defaultLocale: defaultLocale,
-  urlMappingStrategy: 'rewrite', // Keeps URLs clean, e.g. /dashboard instead of /en/dashboard
+  urlMappingStrategy: 'redirect', // Changed from 'rewrite' to 'redirect'
 });
 
 export function middleware(request: NextRequest) {
