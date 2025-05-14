@@ -52,3 +52,4 @@ node_modules/
 
 # You might also want to ignore firebase build outputs
 .firebase/
+/firebase
