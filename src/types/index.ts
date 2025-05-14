@@ -31,7 +31,7 @@ export interface StayGuestData {
 }
 
 export type CurrentAppContext = 
-  | { status: 'authenticated'; user: AuthenticatedUser; activeReservation: Reservation }
+  | { status: 'authenticated'; user: AuthenticatedUser; activeReservation: Reservation | null }
   | { status: 'guest'; guestData: StayGuestData; activeReservation: Reservation }
   | { status: 'unauthenticated' }
   | { status: 'loading' };

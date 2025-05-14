@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, type FormEvent } from 'react';
@@ -129,7 +128,7 @@ export default function LoginPage() {
                   {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Logging in...</> : <> <LogIn className="mr-2 h-4 w-4" /> Login with Account </>}
                 </Button>
                 <div className="text-sm text-center">
-                  <Link href={`/${currentLocale}/forgot-password`} legacyBehavior>
+                  <Link href={`/${String(currentLocale)}/forgot-password`} legacyBehavior>
                     <a className="font-medium text-primary hover:underline">Forgot password?</a>
                   </Link>
                 </div>
@@ -182,7 +181,7 @@ export default function LoginPage() {
                       disabled={isLoading}
                     />
                   </div>
-                   <p className="text-xs text-muted-foreground pt-1">Used to verify your booking. <Link href={`/${currentLocale}/find-reservation`} legacyBehavior><a className="text-primary hover:underline">Help finding reservation?</a></Link></p>
+                   <p className="text-xs text-muted-foreground pt-1">Used to verify your booking. <Link href={`/${String(currentLocale)}/find-reservation`} legacyBehavior><a className="text-primary hover:underline">Help finding reservation?</a></Link></p>
                 </div>
                 <Button type="submit" className="w-full bg-accent hover:bg-accent/90" disabled={isLoading}>
                  {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying...</> : <> <LogIn className="mr-2 h-4 w-4" />  Access Your Stay </>}
@@ -194,7 +193,7 @@ export default function LoginPage() {
         <CardFooter className="flex flex-col items-center space-y-2">
           <p className="text-sm text-muted-foreground">
             New to M?{' '}
-            <Link href={`/${currentLocale}/register`} legacyBehavior>
+            <Link href={`/${String(currentLocale)}/register`} legacyBehavior>
               <a className="font-medium text-primary hover:underline">Create an account</a>
             </Link>
           </p>
