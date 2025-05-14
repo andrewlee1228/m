@@ -1,1 +1,0 @@
-self.__RSC_SERVER_MANIFEST="{\"node\":{\"4026f3691270c483170e18f513c395963a1e3a42b4\":{\"workers\":{\"app/[locale]/dashboard/stay/concierge/page\":{\"moduleId\":\"37142\",\"async\":false}},\"layer\":{\"app/[locale]/dashboard/stay/concierge/page\":\"action-browser\"}}},\"edge\":{},\"encryptionKey\":\"process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY\"}"
